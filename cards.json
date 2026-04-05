@@ -827,6 +827,7 @@
         "life": 0
       }
     },
+
     {
       "id": 23,
       "types": [
@@ -848,7 +849,7 @@
         {
           "trigger": "entranceThis",
           "effect": {
-            "targeting": "self",
+            "targeting": "target",
             "action": "dmg",
             "pow": -3
           }
@@ -856,10 +857,11 @@
       ],
       "costs": {
         "sacCost": 0,
-        "energy": 4,
-        "life": 1
+        "energy": 1,
+        "life": 0
       }
     },
+
     {
       "id": 24,
       "types": [
@@ -919,6 +921,7 @@
         "life": 2
       }
     },
+
     {
       "id": 25,
       "types": [
@@ -996,6 +999,7 @@
         "life": 0
       }
     },
+
     {
       "id": 27,
       "types": [
@@ -2761,6 +2765,40 @@
       "costs": {
         "sacCost": 0,
         "energy": -5,
+        "life": 0
+      }
+    },
+    {"id": 77,
+      "types": ["Spell"],
+      "name": "Blood For Blood",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "kill",
+            "pow": 0
+          }},
+        {
+          "trigger": "exitAny",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": {
+              "operand": "access",
+              "triggers": [
+                "lastExited"
+              ],
+              "access": "atk"
+            }
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 2,
         "life": 0
       }
     }

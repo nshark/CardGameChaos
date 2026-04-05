@@ -15,6 +15,7 @@ def _ev(cat, msg):
 class Game:
     def __init__(self, DeckA, DeckB, logging=False):
         self.lastEntered = None
+        self.lastExited = None
         self.scheduleEnd = False
         self.turnNumber = 0
         self.advantage = 0
@@ -215,7 +216,7 @@ class Game:
                             f"  entranceAny trigger fires"))
                     entranceAnyTriggers[1](self)
         if card.df == 0:
-            self.kill(card)
+            self.removeFromBattlefield(card)
 
     def isActive(self, card):
         return card in self.p1.battlefield or card in self.p2.battlefield
@@ -231,9 +232,11 @@ class Game:
                     f"P{card.pID}'s {card.name}[{card.atk}/{card.df}] exits"))
 
         if card.pID == 0 and card in self.p1.battlefield and card.types != ['Curse']:
+            self.lastExited = card
             self.p1.battlefield.remove(card)
             self.p1.graveyard.append(card)
         elif card.pID == 1 and card in self.p2.battlefield and card.types != ['Curse']:
+            self.lastExited = card
             self.p2.battlefield.remove(card)
             self.p2.graveyard.append(card)
         elif card.types != ['Curse']:
@@ -324,6 +327,7 @@ class Game:
 
     def removeFromBattlefield(self, card):
         card.exit(self)
+        self.lastExited = card
         if card.pID == 0 and card in self.p1.battlefield:
             self.p1.battlefield.remove(card)
         elif card.pID == 1 and card in self.p2.battlefield:
@@ -340,6 +344,8 @@ class Game:
             self.scheduleEnd = True
 
     def reset(self):
+        self.lastExited = None
+        self.lastEntered = None
         self.p1.deck.reset()
         self.p2.deck.reset()
         self.p1 = Player(self.p1.deck)

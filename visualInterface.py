@@ -20,9 +20,9 @@ cardLibrary = {}
 for i in range(len(cardData)):
     cardLibrary[cardData[i]['id']] = cardData[i]
     if not 'Curse' in cardData[i]['types']:
-        regularCards.append(cardData[i])
+        regularCards.append(cardData[i]['id'])
     else:
-        curseCards.append(cardData[i])
+        curseCards.append(cardData[i]['id'])
 from Game import Deck, Game, Player
 from Card import Card
 

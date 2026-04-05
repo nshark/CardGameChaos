@@ -115,29 +115,29 @@ class Trigger(primitiveTrigger):
 class Effect:
     def __init__(self, effectData, pCard):
         self.targetingAction = primActFactory(pCard, effectData['targeting'])
-        self.effect = primEffFactory(effectData['action'], effectData['pow'])
+        self.effect = primEffFactory(effectData['action'], effectData['pow'], pCard)
     def execute(self, game):
         targets = self.targetingAction.run(game)
         self.effect.run(game, targets)
 
 
-def primEffFactory(effectID, pow):
+def primEffFactory(effectID, pow, pCard):
     if  effectID == 'dmg':
-        return primDmg(pow)
+        return primDmg(pow, pCard)
     elif effectID == 'kill':
-        return primKill(pow)
+        return primKill(pow, pCard)
     elif effectID == 'draw':
-        return primDraw(pow)
+        return primDraw(pow, pCard)
     elif effectID == 'discard':
-        return primDiscard(pow)
+        return primDiscard(pow, pCard)
     elif effectID == 'modAtk':
-        return primModAtk(pow)
+        return primModAtk(pow, pCard)
     elif effectID == 'modDef':
-        return primModDef(pow)
+        return primModDef(pow, pCard)
     elif effectID == 'bounce':
-        return primBounce(pow)
+        return primBounce(pow, pCard)
     elif effectID == 'revive':
-        return primRevive(pow)
+        return primRevive(pow, pCard)
 
 def primActFactory(pCard, actionID):
     if actionID == 'this':
@@ -175,14 +175,7 @@ class primLastEntered(primitiveAction):
 
 class primLastExited(primitiveAction):
     def run(self, game):
-        if (self.parentCard.pID == 0):
-            if len(game.p1.graveyard) == 0:
-                return None
-            return game.p1.graveyard[0]
-        else:
-            if len(game.p2.graveyard) == 0:
-                return None
-            return game.p2.graveyard[0]
+        return game.lastExited
 
 class primLastKilled(primitiveAction):
     def run(self, game):
@@ -223,8 +216,11 @@ class primAllFrCards(primitiveAction):
         else:
             return game.p2.battlefield
 class primitiveEffect():
-    def __init__(self, pow):
-        self.pow = pow
+    def __init__(self, pow, pCard):
+        if type(pow) == int:
+            self.pow = pow
+        else:
+            self.pow = Trigger(pow, pCard)
     def run(self, game, targets):
         if targets is None:
             return
@@ -234,15 +230,19 @@ class primitiveEffect():
 
 class primDmg(primitiveEffect):
     def run(self, game, targets):
+        if type(self.pow) != int:
+            pw = self.pow.check(game, 'dynamicPower')
+        else:
+            pw = self.pow
         if type(targets) == list:
             super().run(game, targets)
         elif type(targets) == Card:
-            if self.pow >= targets.df:
+            if pw>= targets.df:
                 game.kill(targets)
         elif type(targets) == type(game.p1):
-            targets.life -= self.pow
+            targets.life -= pw
             if game.logging:
-               game.turnLog.append({'cat': 'trigger', 'msg': f"Trigger deals {self.pow} dmg to P{targets.deck.pID} (life: {targets.life})"})
+               game.turnLog.append({'cat': 'trigger', 'msg': f"Trigger deals {pw} dmg to P{targets.deck.pID} (life: {targets.life})"})
             if targets.life <= 0:
                 game.end()
 class primKill(primitiveEffect):
@@ -253,34 +253,50 @@ class primKill(primitiveEffect):
             game.kill(targets)
 class primDraw(primitiveEffect):
     def run(self, game, targets):
+        if type(self.pow) != int:
+            pw = self.pow.check(game, 'dynamicPower')
+        else:
+            pw = self.pow
         if type(targets) == list:
             super().run(game, targets)
         if type(targets) == type(game.p1):
-            game.draw(targets, self.pow)
+            game.draw(targets, pw)
 class primDiscard(primitiveEffect):
     def run(self, game, targets):
+        if type(self.pow) != int:
+            pw = self.pow.check(game, 'dynamicPower')
+        else:
+            pw = self.pow
         if type(targets) == list:
             super().run(game, targets)
         if type(targets) == type(game.p1):
-            game.discard(targets, self.pow)
+            game.discard(targets, pw)
 class primModAtk(primitiveEffect):
     def run(self, game, targets):
+        if type(self.pow) != int:
+            pw = self.pow.check(game, 'dynamicPower')
+        else:
+            pw = self.pow
         if type(targets) == list:
             super().run(game, targets)
         if type(targets) == Card:
             if game.logging:
-                game.turnLog.append({'cat': 'stat', 'msg': f"Trigger: {targets.name} ATK {targets.atk - self.pow} -> {targets.atk}"})
-            targets.atk += self.pow
+                game.turnLog.append({'cat': 'stat', 'msg': f"Trigger: {targets.name} ATK {targets.atk - pw} -> {targets.atk}"})
+            targets.atk += pw
             if targets.atk < 0:
                 targets.atk = 0
 class primModDef(primitiveEffect):
     def run(self, game, targets):
+        if type(self.pow) != int:
+            pw = self.pow.check(game, 'dynamicPower')
+        else:
+            pw = self.pow
         if type(targets) == list:
             super().run(game, targets)
         if type(targets) == Card:
             if game.logging:
-                game.turnLog.append({'cat': 'stat', 'msg': f"Trigger: {targets.name} DEF {targets.df - self.pow} -> {targets.df}"})
-            targets.df += self.pow
+                game.turnLog.append({'cat': 'stat', 'msg': f"Trigger: {targets.name} DEF {targets.df - pw} -> {targets.df}"})
+            targets.df += pw
             if targets.df < 0:
                 targets.df = 0
             if targets.df == 0:
@@ -298,18 +314,22 @@ class primBounce(primitiveEffect):
                 game.removeFromBattlefield(targets)
 class primRevive(primitiveEffect):
     def run(self, game, targets):
+        if type(self.pow) != int:
+            pw = self.pow.check(game, 'dynamicPower')
+        else:
+            pw = self.pow
         if type(targets) == list:
             super().run(game, targets)
         if type(targets) == Card:
             if not game.isActive(targets):
-                if targets.pID == 0 and game.p1.life > self.pow and targets in game.p1.graveyard:
+                if targets.pID == 0 and game.p1.life > pw and targets in game.p1.graveyard:
                     game.p1.graveyard.remove(targets)
                     game.play(targets, noAnyEntrance=True)
-                    game.p1.life -= self.pow
-                elif game.p2.life > self.pow and targets in game.p2.graveyard:
+                    game.p1.life -= pw
+                elif game.p2.life > pw and targets in game.p2.graveyard:
                     game.p2.graveyard.remove(targets)
                     game.play(targets, noAnyEntrance=True)
-                    game.p2.life -= self.pow
+                    game.p2.life -= pw
 
 class primitiveNonProducingTrigger(primitiveTrigger):
     def __init__(self, triggerData):

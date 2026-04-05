@@ -16,9 +16,9 @@ cardLibrary = {}
 for i in range(len(cardData)):
     cardLibrary[cardData[i]['id']] = cardData[i]
     if not 'Curse' in cardData[i]['types']:
-        regularCards.append(cardData[i])
+        regularCards.append(cardData[i]['id'])
     else:
-        curseCards.append(cardData[i])
+        curseCards.append(cardData[i]['id'])
 
 # ── Bot decision-making (replaces CLI input) ───────────────────────────────────
 def card_value(card):
@@ -265,6 +265,7 @@ def run_game(game_number, max_turns=200):
 def run_suite(n_games=50):
     print(f"Running {n_games} games...\n")
     results = [run_game(i) for i in range(n_games)]
+    exceptions = [result['exception'] for result in results if result['exception'] is not None != []]
     print(f"Finished running {n_games} games\n")
     cardPairing = {}
     for result in results:
@@ -305,6 +306,8 @@ def run_suite(n_games=50):
             avg += cardPairing[cID][pairCID]
             count += 1
         cardPairing[cID]['averageSynergy'] = avg / count
+    for ex in exceptions:
+        print(ex)
     return cardPairing
 
 
