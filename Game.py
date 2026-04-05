@@ -113,12 +113,12 @@ class Game:
 
         # Curse tick
         for card in list(self.p1.battlefield + self.p2.battlefield):
-            if card.types == ['curse'] and card.df > 0:
+            if card.types == ['Curse'] and card.df > 0:
                 card.df -= 1
                 if self.logging:
                     self.turnLog.append(_ev('stat',
                         f"Curse {card.name} ticks to def {card.df}"))
-            elif card.types == ['curse'] and card.df == 0:
+            elif card.types == ['Curse'] and card.df == 0:
                 self.kill(card)
 
         self.turnNumber += 1
@@ -141,10 +141,10 @@ class Game:
         defenders = defender.requestDecision('defenders', self, attackers=attackers)
         attackers.sort(key=lambda x: x.atk, reverse=True)
         for at in attackers:
-            if at.types[0] == 'curse':
+            if at.types[0] == 'Curse':
                 attackers.remove(at)
         for df in defenders:
-            if df.types[0] == 'curse':
+            if df.types[0] == 'Curse':
                 defenders.remove(df)
         if self.logging:
             if attackers:
@@ -230,13 +230,13 @@ class Game:
                 self.turnLog.append(_ev('kill',
                     f"P{card.pID}'s {card.name}[{card.atk}/{card.df}] exits"))
 
-        if card.pID == 0 and card in self.p1.battlefield and card.types != ['curse']:
+        if card.pID == 0 and card in self.p1.battlefield and card.types != ['Curse']:
             self.p1.battlefield.remove(card)
             self.p1.graveyard.append(card)
-        elif card.pID == 1 and card in self.p2.battlefield and card.types != ['curse']:
+        elif card.pID == 1 and card in self.p2.battlefield and card.types != ['Curse']:
             self.p2.battlefield.remove(card)
             self.p2.graveyard.append(card)
-        elif card.types != ['curse']:
+        elif card.types != ['Curse']:
             return
 
         if card.id in self.handlers['exitThis']:
@@ -463,11 +463,11 @@ class Deck:
         return self.drawOrder.pop(0)
 
     def cardExitField(self, card):
-        if card.types[0] != 'curse':
+        if card.types[0] != 'Curse':
             self.drawOrder.append(card)
 
     def reset(self):
         self.drawOrder = []
         for card in self.cards:
-            if card.types[0] != 'curse':
+            if card.types[0] != 'Curse':
                 self.drawOrder.append(card)

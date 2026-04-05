@@ -13,9 +13,16 @@ CARD_PATH   = os.path.join(SCRIPT_DIR, "cards.json")
 sys.path.insert(0, SCRIPT_DIR)
 
 with open(CARD_PATH) as f:
-    _raw = json.load(f)["cards"]
-cardLibrary = {c["id"]: c for c in _raw}
-
+    cardData = json.load(f)["cards"]
+regularCards = []
+curseCards = []
+cardLibrary = {}
+for i in range(len(cardData)):
+    cardLibrary[cardData[i]['id']] = cardData[i]
+    if not 'Curse' in cardData[i]['types']:
+        regularCards.append(cardData[i])
+    else:
+        curseCards.append(cardData[i])
 from Game import Deck, Game, Player
 from Card import Card
 
@@ -122,8 +129,8 @@ Player.requestDecision = bot_request_decision
 # GAME FACTORY
 # ─────────────────────────────────────────────────────────────────────────────
 def new_game():
-    ids_a = random.choices(range(1, 68), k=20) + random.choices(range(69,76), k=random.randint(0,2))
-    ids_b = random.choices(range(1, 68), k=20) + random.choices(range(69,76), k=random.randint(0,2))
+    ids_a = random.choices(regularCards, k=20)+random.choices(curseCards, k=random.randint(0,2))
+    ids_b = random.choices(regularCards, k=20)+random.choices(curseCards, k=random.randint(0,2))
     deck_a = Deck(cardLibrary, ids_a, 0)
     deck_b = Deck(cardLibrary, ids_b, 1)
     return Game(deck_a, deck_b, logging=True)

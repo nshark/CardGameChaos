@@ -10,7 +10,15 @@ from Card import Card
 cardPath = 'cards.json'
 with open(cardPath, 'r') as f:
     cardData = json.load(f)['cards']
-cardLibrary = {c['id']: c for c in cardData}
+regularCards = []
+curseCards = []
+cardLibrary = {}
+for i in range(len(cardData)):
+    cardLibrary[cardData[i]['id']] = cardData[i]
+    if not 'Curse' in cardData[i]['types']:
+        regularCards.append(cardData[i])
+    else:
+        curseCards.append(cardData[i])
 
 # ── Bot decision-making (replaces CLI input) ───────────────────────────────────
 def card_value(card):
@@ -215,8 +223,8 @@ def run_game(game_number, max_turns=200):
         'cumulativeAdvantage': 0
     }
 
-    ids_a = random.choices(range(1, 68), k=20) + random.choices(range(69,76), k=random.randint(0,2))
-    ids_b = random.choices(range(1, 68), k=20) + random.choices(range(69,76), k=random.randint(0,2))
+    ids_a = random.choices(regularCards, k=20)+random.choices(curseCards, k=random.randint(0,2))
+    ids_b = random.choices(regularCards, k=20)+random.choices(curseCards, k=random.randint(0,2))
 
     try:
         deck_a = Deck(cardLibrary, ids_a, 0)
