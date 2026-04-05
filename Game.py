@@ -43,7 +43,7 @@ class Game:
             f"{'█' * 40}\n",
         ])
     def takeTurn(self):
-        energy = min(round((self.turnNumber/2) + 2), 10)
+        energy = min((self.turnNumber//2) + 2, 10)
         if self.turnNumber % 2 == 0:
             player = self.p1
         else:
@@ -75,7 +75,8 @@ class Game:
                         sacEnergy -= card.costs['sacCost']
                         totalPossibleSacEnergy -= card.costs['sacCost']
                         self.play(card)
-        self.combatPhase()
+        if (self.turnNumber > 0):
+            self.combatPhase()
         for card in self.p1.battlefield + self.p2.battlefield:
             if card.types == ['curse'] and card.df > 0:
                 card.df -= 1
@@ -130,13 +131,13 @@ class Game:
     def isActive(self, card):
         return card in self.p1.battlefield or card in self.p2.battlefield
     def kill(self, card, culprit=None):
-        if card.pID == 0 and card in self.p1.battlefield:
+        if card.pID == 0 and card in self.p1.battlefield and card.types != ['curse']:
             self.p1.battlefield.remove(card)
             self.p1.graveyard.append(card)
-        elif card.pID == 1 and card in self.p2.battlefield:
+        elif card.pID == 1 and card in self.p2.battlefield and card.types != ['curse']:
             self.p2.battlefield.remove(card)
             self.p2.graveyard.append(card)
-        else:
+        elif card.types != ['curse']:
             return#the card does not exist in a battlefield
         if card.id in self.handlers['exitThis']:
             if (self.handlers['exitThis'][card.id][0](self, 'exitThis')):
@@ -325,6 +326,7 @@ class Player:
 
 class Deck:
     def __init__(self, cardLibrary, cardIDs, pID):
+        self.pID = pID
         self.cards = []
         self.drawOrder = []
         self.curses = []
@@ -335,7 +337,7 @@ class Deck:
 
     def drawHand(self):
         random.shuffle(self.drawOrder)
-        hand = self.drawOrder[:5]
+        hand = self.drawOrder[:(5+self.pID)]
         self.drawOrder = list(set(self.drawOrder) - set(hand))
         hand += self.curses
         return hand
