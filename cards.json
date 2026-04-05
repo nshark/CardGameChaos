@@ -1,0 +1,2768 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "types": [
+        "Fire",
+        "Warrior"
+      ],
+      "name": "Ember Knight",
+      "atk": 3,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Fire"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 2,
+      "types": [
+        "Fire",
+        "Dragon"
+      ],
+      "name": "Cinder Drake",
+      "atk": 4,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Dragon"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 3,
+      "types": [
+        "Fire"
+      ],
+      "name": "Volcanic Titan",
+      "atk": 6,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 2,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 4,
+      "types": [
+        "Fire",
+        "Spell"
+      ],
+      "name": "Flame Burst",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 4
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 5,
+      "types": [
+        "Fire",
+        "Warrior"
+      ],
+      "name": "Ash Berserker",
+      "atk": 5,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 6,
+      "types": [
+        "Water",
+        "Mage"
+      ],
+      "name": "Tide Conjurer",
+      "atk": 2,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Water"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 7,
+      "types": [
+        "Water",
+        "Beast"
+      ],
+      "name": "Sea Serpent",
+      "atk": 4,
+      "def": 5,
+      "abilt": [
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "exitAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastExited"
+                    ],
+                    "access": "types"
+                  },
+                  "Beast"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "modDef",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 8,
+      "types": [
+        "Water",
+        "Spell"
+      ],
+      "name": "Healing Wave",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -4
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 2,
+        "life": 0
+      }
+    },
+    {
+      "id": 9,
+      "types": [
+        "Water"
+      ],
+      "name": "Frost Leviathan",
+      "atk": 5,
+      "def": 6,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "modAtk",
+            "pow": -3
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 10,
+      "types": [
+        "Water",
+        "Mage"
+      ],
+      "name": "Blizzard Witch",
+      "atk": 3,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "exitAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastExited"
+                    ],
+                    "access": "types"
+                  },
+                  "Mage"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 2
+      }
+    },
+    {
+      "id": 11,
+      "types": [
+        "Earth",
+        "Beast"
+      ],
+      "name": "Stone Boar",
+      "atk": 2,
+      "def": 5,
+      "abilt": [
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Earth"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "modDef",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 12,
+      "types": [
+        "Earth",
+        "Warrior"
+      ],
+      "name": "Granite Guardian",
+      "atk": 3,
+      "def": 7,
+      "abilt": [
+        {
+          "trigger": "entranceAny",
+          "effect": {
+            "targeting": "this",
+            "action": "modDef",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Warrior"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 13,
+      "types": [
+        "Earth",
+        "Spell"
+      ],
+      "name": "Tectonic Shift",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "modAtk",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 14,
+      "types": [
+        "Earth"
+      ],
+      "name": "Golem Overlord",
+      "atk": 5,
+      "def": 8,
+      "abilt": [
+        {
+          "trigger": "exitAny",
+          "effect": {
+            "targeting": "this",
+            "action": "modDef",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 3,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 15,
+      "types": [
+        "Earth",
+        "Beast"
+      ],
+      "name": "Mudshell Tortoise",
+      "atk": 1,
+      "def": 6,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 16,
+      "types": [
+        "Wind",
+        "Beast"
+      ],
+      "name": "Storm Falcon",
+      "atk": 3,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "exitAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastExited"
+                    ],
+                    "access": "types"
+                  },
+                  "Beast"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 17,
+      "types": [
+        "Wind",
+        "Dragon"
+      ],
+      "name": "Tempest Wyrm",
+      "atk": 4,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "bounce",
+            "pow": 0
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Wind"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "target",
+            "action": "bounce",
+            "pow": 0
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 18,
+      "types": [
+        "Wind",
+        "Spell"
+      ],
+      "name": "Gale Redirect",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "bounce",
+            "pow": 0
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 2,
+        "life": 0
+      }
+    },
+    {
+      "id": 19,
+      "types": [
+        "Wind",
+        "Warrior"
+      ],
+      "name": "Gust Blade",
+      "atk": 4,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 20,
+      "types": [
+        "Wind"
+      ],
+      "name": "Cyclone Archon",
+      "atk": 5,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "bounce",
+            "pow": 0
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 3,
+        "energy": 6,
+        "life": 0
+      }
+    },
+    {
+      "id": 21,
+      "types": [
+        "Dark",
+        "Undead"
+      ],
+      "name": "Shadow Wraith",
+      "atk": 3,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "this",
+            "action": "revive",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Undead"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 2
+      }
+    },
+    {
+      "id": 22,
+      "types": [
+        "Dark",
+        "Mage"
+      ],
+      "name": "Void Sorcerer",
+      "atk": 4,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "opponent",
+            "action": "discard",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Mage"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 23,
+      "types": [
+        "Dark",
+        "Spell"
+      ],
+      "name": "Soul Drain",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "kill",
+            "pow": 0
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -3
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 1
+      }
+    },
+    {
+      "id": 24,
+      "types": [
+        "Dark"
+      ],
+      "name": "Dread Lich",
+      "atk": 5,
+      "def": 5,
+      "abilt": [
+        {
+          "trigger": "exitAny",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "this",
+            "action": "revive",
+            "pow": 3
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Undead"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 5,
+        "life": 2
+      }
+    },
+    {
+      "id": 25,
+      "types": [
+        "Dark",
+        "Undead"
+      ],
+      "name": "Bone Archer",
+      "atk": 3,
+      "def": 1,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 1
+      }
+    },
+    {
+      "id": 26,
+      "types": [
+        "Light",
+        "Holy"
+      ],
+      "name": "Radiant Paladin",
+      "atk": 3,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Holy"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 27,
+      "types": [
+        "Light",
+        "Mage"
+      ],
+      "name": "Sunbeam Arcanist",
+      "atk": 3,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 28,
+      "types": [
+        "Light",
+        "Spell"
+      ],
+      "name": "Divine Shield",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 29,
+      "types": [
+        "Light"
+      ],
+      "name": "Celestial Seraph",
+      "atk": 4,
+      "def": 6,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -3
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 2,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 30,
+      "types": [
+        "Light",
+        "Holy"
+      ],
+      "name": "Auric Cleric",
+      "atk": 2,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 2,
+        "life": 0
+      }
+    },
+    {
+      "id": 31,
+      "types": [
+        "Nature",
+        "Beast"
+      ],
+      "name": "Thornback Wolf",
+      "atk": 3,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Beast"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 32,
+      "types": [
+        "Nature",
+        "Mage"
+      ],
+      "name": "Grove Shaman",
+      "atk": 2,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 33,
+      "types": [
+        "Nature",
+        "Spell"
+      ],
+      "name": "Overgrowth",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "modDef",
+            "pow": 4
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 2,
+        "life": 0
+      }
+    },
+    {
+      "id": 34,
+      "types": [
+        "Nature"
+      ],
+      "name": "Ancient Treant",
+      "atk": 4,
+      "def": 7,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "exitAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastExited"
+                    ],
+                    "access": "types"
+                  },
+                  "Nature"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 35,
+      "types": [
+        "Nature",
+        "Beast"
+      ],
+      "name": "Verdant Hydra",
+      "atk": 4,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Beast"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 36,
+      "types": [
+        "Thunder",
+        "Warrior"
+      ],
+      "name": "Lightning Ronin",
+      "atk": 4,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Warrior"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 37,
+      "types": [
+        "Thunder",
+        "Dragon"
+      ],
+      "name": "Storm Dragon",
+      "atk": 5,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "dmg",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Dragon"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 38,
+      "types": [
+        "Thunder",
+        "Spell"
+      ],
+      "name": "Chain Lightning",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 3
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 39,
+      "types": [
+        "Thunder"
+      ],
+      "name": "Thunderlord",
+      "atk": 6,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 3
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 3,
+        "energy": 6,
+        "life": 0
+      }
+    },
+    {
+      "id": 40,
+      "types": [
+        "Thunder",
+        "Beast"
+      ],
+      "name": "Voltail Hound",
+      "atk": 3,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Beast"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 41,
+      "types": [
+        "Dark",
+        "Mage"
+      ],
+      "name": "Nightmare Summoner",
+      "atk": 3,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "opponent",
+            "action": "discard",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 42,
+      "types": [
+        "Fire",
+        "Dragon"
+      ],
+      "name": "Magma Wyrm",
+      "atk": 5,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 43,
+      "types": [
+        "Water",
+        "Holy"
+      ],
+      "name": "Sea Cleric",
+      "atk": 2,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Holy"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 44,
+      "types": [
+        "Earth",
+        "Warrior"
+      ],
+      "name": "Quake Berserker",
+      "atk": 5,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "modDef",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 45,
+      "types": [
+        "Wind",
+        "Holy"
+      ],
+      "name": "Zephyr Angel",
+      "atk": 3,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 46,
+      "types": [
+        "Nature",
+        "Holy"
+      ],
+      "name": "Bloom Priestess",
+      "atk": 1,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -3
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 47,
+      "types": [
+        "Light",
+        "Warrior"
+      ],
+      "name": "Aureate Champion",
+      "atk": 4,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 48,
+      "types": [
+        "Dark",
+        "Warrior"
+      ],
+      "name": "Cursed Blade",
+      "atk": 5,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 3
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 2
+      }
+    },
+    {
+      "id": 49,
+      "types": [
+        "Thunder",
+        "Mage"
+      ],
+      "name": "Arc Mage",
+      "atk": 3,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Mage"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 50,
+      "types": [
+        "Water",
+        "Dragon"
+      ],
+      "name": "Abyssal Serpentlord",
+      "atk": 5,
+      "def": 5,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "bounce",
+            "pow": 0
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Dragon"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 2,
+        "energy": 6,
+        "life": 0
+      }
+    },
+    {
+      "id": 51,
+      "types": [
+        "Fire",
+        "Mage"
+      ],
+      "name": "Pyromancer",
+      "atk": 3,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "entranceAny",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 52,
+      "types": [
+        "Earth",
+        "Undead"
+      ],
+      "name": "Fossil Revenant",
+      "atk": 3,
+      "def": 5,
+      "abilt": [
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "this",
+            "action": "revive",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 1
+      }
+    },
+    {
+      "id": 53,
+      "types": [
+        "Light",
+        "Dragon"
+      ],
+      "name": "Radiance Wyrm",
+      "atk": 5,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "entranceAny",
+              {
+                "operand": "if",
+                "cmp": "contains",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "lastEntered"
+                    ],
+                    "access": "types"
+                  },
+                  "Dragon"
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 54,
+      "types": [
+        "Wind",
+        "Undead"
+      ],
+      "name": "Phantom Gale",
+      "atk": 2,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "this",
+            "action": "revive",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 3,
+        "life": 2
+      }
+    },
+    {
+      "id": 55,
+      "types": [
+        "Nature",
+        "Dragon"
+      ],
+      "name": "Rootwing Drake",
+      "atk": 5,
+      "def": 5,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 56,
+      "types": [
+        "Dark",
+        "Holy"
+      ],
+      "name": "Fallen Seraph",
+      "atk": 5,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "kill",
+            "pow": 0
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 3,
+        "energy": 6,
+        "life": 1
+      }
+    },
+    {
+      "id": 57,
+      "types": [
+        "Fire",
+        "Nature"
+      ],
+      "name": "Wildfire Dryad",
+      "atk": 4,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 58,
+      "types": [
+        "Water",
+        "Earth"
+      ],
+      "name": "Mudtide Colossus",
+      "atk": 4,
+      "def": 6,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "modAtk",
+            "pow": -1
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "modDef",
+            "pow": -1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 59,
+      "types": [
+        "Thunder",
+        "Wind"
+      ],
+      "name": "Stormsurge Valkyrie",
+      "atk": 5,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 60,
+      "types": [
+        "Light",
+        "Nature",
+        "Wind"
+      ],
+      "name": "Verdant Archangel",
+      "atk": 4,
+      "def": 6,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 3,
+        "energy": 6,
+        "life": 0
+      }
+    },
+    {
+      "id": 61,
+      "types": [
+        "Dark",
+        "Fire",
+        "Dragon"
+      ],
+      "name": "Hellfire Overlord",
+      "atk": 7,
+      "def": 5,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "dmg",
+            "pow": 3
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 3
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "this",
+            "action": "revive",
+            "pow": 4
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 5,
+        "energy": 7,
+        "life": 2
+      }
+    },
+    {
+      "id": 62,
+      "types": [
+        "Water",
+        "Thunder",
+        "Mage"
+      ],
+      "name": "Stormcaller Archon",
+      "atk": 4,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 3
+          }
+        },
+        {
+          "trigger": "entranceAny",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 1,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 63,
+      "types": [
+        "Earth",
+        "Dark"
+      ],
+      "name": "Gravewarden Giant",
+      "atk": 4,
+      "def": 7,
+      "abilt": [
+        {
+          "trigger": "exitAny",
+          "effect": {
+            "targeting": "this",
+            "action": "modDef",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "exitAny",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 2,
+        "energy": 6,
+        "life": 0
+      }
+    },
+    {
+      "id": 64,
+      "types": [
+        "Nature",
+        "Thunder"
+      ],
+      "name": "Tempest Treant",
+      "atk": 3,
+      "def": 5,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "dmg",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 65,
+      "types": [
+        "Wind",
+        "Nature"
+      ],
+      "name": "Canopy Glider",
+      "atk": 3,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 0
+      }
+    },
+    {
+      "id": 66,
+      "types": [
+        "Light",
+        "Thunder"
+      ],
+      "name": "Judgement Bolt",
+      "atk": 0,
+      "def": 0,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "target",
+            "action": "dmg",
+            "pow": 5
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": -2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 5,
+        "life": 0
+      }
+    },
+    {
+      "id": 67,
+      "types": [
+        "Fire",
+        "Warrior"
+      ],
+      "name": "Infernal Duelist",
+      "atk": 4,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": 1
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "this",
+            "action": "draw",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 3,
+        "life": 0
+      }
+    },
+    {
+      "id": 68,
+      "types": [
+        "Water",
+        "Undead"
+      ],
+      "name": "Drowned Revenant",
+      "atk": 3,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "this",
+            "action": "revive",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "modAtk",
+            "pow": -1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 4,
+        "life": 2
+      }
+    },
+    {
+      "id": 69,
+      "types": [
+        "Curse"
+      ],
+      "name": "Blood Tithe",
+      "atk": 0,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": -2,
+        "life": 0
+      }
+    },
+    {
+      "id": 70,
+      "types": [
+        "Curse"
+      ],
+      "name": "Fraying Mind",
+      "atk": 0,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "discard",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": -2,
+        "life": 0
+      }
+    },
+    {
+      "id": 71,
+      "types": [
+        "Curse"
+      ],
+      "name": "Withering Aura",
+      "atk": 0,
+      "def": 3,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": -1
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modAtk",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": -3,
+        "life": 0
+      }
+    },
+    {
+      "id": 72,
+      "types": [
+        "Curse"
+      ],
+      "name": "Soulblight",
+      "atk": 0,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": -3,
+        "life": 0
+      }
+    },
+    {
+      "id": 73,
+      "types": [
+        "Curse"
+      ],
+      "name": "Leaden Chains",
+      "atk": 0,
+      "def": 4,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": -2
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "allFrCards",
+            "action": "modDef",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": -3,
+        "life": 0
+      }
+    },
+    {
+      "id": 74,
+      "types": [
+        "Curse"
+      ],
+      "name": "Hemorrhage",
+      "atk": 0,
+      "def": 6,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": -4,
+        "life": 0
+      }
+    },
+    {
+      "id": 75,
+      "types": [
+        "Curse"
+      ],
+      "name": "Frenzied Pact",
+      "atk": 0,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "exitAny",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": 1
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": -3,
+        "life": 0
+      }
+    },
+    {
+      "id": 76,
+      "types": [
+        "Curse"
+      ],
+      "name": "Ruinous Bargain",
+      "atk": 0,
+      "def": 2,
+      "abilt": [
+        {
+          "trigger": "entranceThis",
+          "effect": {
+            "targeting": "self",
+            "action": "discard",
+            "pow": 2
+          }
+        },
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "self",
+            "action": "dmg",
+            "pow": 2
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": -5,
+        "life": 0
+      }
+    }
+  ]
+}
