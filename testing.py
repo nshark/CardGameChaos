@@ -257,54 +257,51 @@ def run_game(game_number, max_turns=200):
 def run_suite(n_games=50):
     print(f"Running {n_games} games...\n")
     results = [run_game(i) for i in range(n_games)]
+    print(f"Finished running {n_games} games\n")
+    cardPairing = {}
+    for result in results:
+        if result['outcome'] != 'completed':
+            continue
+        for cID in result['winningDeck']:
+            if cID not in cardPairing:
+                cardPairing[cID] = {'totalAdvantage':2}
+            else:
+                cardPairing[cID]['totalAdvantage'] += 1.25
+            for pairCID in result['winningDeck']:
+                if cID != pairCID:
+                    if pairCID not in cardPairing[cID]:
+                        cardPairing[cID][pairCID] = 1.25
+                    else:
+                        cardPairing[cID][pairCID] += 1.25
+            for allCID in cardPairing[cID]:
+                cardPairing[cID][allCID] -= 0.25
+        for cID in result['losingDeck']:
+            if cID not in cardPairing:
+                cardPairing[cID] = {'totalAdvantage':-1.25}
+            else:
+                cardPairing[cID]['totalAdvantage'] -= 1.25
+            for pairCID in result['losingDeck']:
+                if cID != pairCID:
+                    if cID not in cardPairing:
+                        cardPairing[cID] = {pairCID:-1.25}
+                    elif pairCID not in cardPairing[cID]:
+                        cardPairing[cID][pairCID] = -1.25
+                    else:
+                        cardPairing[cID][pairCID] -= 1.25
+            for allCID in cardPairing[cID]:
+                cardPairing[cID][allCID] += 0.25
+    for cID in cardPairing:
+        avg = 0
+        count = 0
+        for pairCID in cardPairing[cID]:
+            avg += cardPairing[cID][pairCID]
+            count += 1
+        cardPairing[cID]['averageSynergy'] = avg / count
+    return cardPairing
 
-    completed  = [r for r in results if r['outcome'] == 'completed']
-    timeouts   = [r for r in results if r['outcome'] == 'timeout']
-    exceptions = [r for r in results if r['exception']]
-    inv_fails  = [r for r in results if r['errors']]
-    advantage = sum(r['cumulativeAdvantage'] for r in results if r['outcome'] == 'completed')
-    p1Victories = round(len(completed)/2) + advantage
-    p2Victories = len(completed) - p1Victories
-    cardValue = {}
-    for r in results:
-        if 'winningDeck' in r:
-            for id in r['winningDeck']:
-                cardValue[id] = cardValue.get(id,0) + 1
-        if 'losingDeck' in r:
-            for id in r['losingDeck']:
-                cardValue[id] = cardValue.get(id,0) - 1
-    avg_turns = (
-        sum(r['turns'] for r in completed) / len(completed)
-        if completed else 0
-    )
 
-    print("=" * 50)
-    print(f"  Games run:          {n_games}")
-    print(f"  Completed:          {len(completed)}")
-    print(f"  Timed out:          {len(timeouts)}  (>{200} turns)")
-    print(f"  Exceptions:         {len(exceptions)}")
-    print(f"  Invariant failures: {len(inv_fails)}")
-    print(f"  Avg turns/game:     {avg_turns:.1f}")
-    print(f"  Ratio Between P1 victories and P2 victories: {p1Victories} : {p2Victories}" )
-    print("=" * 50)
-    print(sorted(cardValue.items(), key=lambda x: x[1], reverse=True))
-    print()
-    if exceptions:
-        print("\n── Exceptions ────────────────────────────────────")
-        for r in exceptions[:5]:  # cap at 5 to avoid wall of text
-            print(f"\n  Game {r['game']} (turn {r['turns']}):")
-            for line in r['exception'].splitlines():
-                print(f"    {line}")
-
-    if inv_fails:
-        print("\n── Invariant Failures ────────────────────────────")
-        for r in inv_fails[:5]:
-            print(f"\n  Game {r['game']}:")
-            for err in r['errors']:
-                print(f"    ✗ {err}")
-
-    print()
-    return results
 
 if __name__ == '__main__':
-    run_suite(n_games=3000)
+    output = open('cardSynergies.json', 'w')
+    json.dump(run_suite(n_games=10000),output)
+    output.close()

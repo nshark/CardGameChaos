@@ -140,7 +140,12 @@ class Game:
         attackers = attacker.requestDecision('attackers', self, availableDefenders=defender.battlefield)
         defenders = defender.requestDecision('defenders', self, attackers=attackers)
         attackers.sort(key=lambda x: x.atk, reverse=True)
-
+        for at in attackers:
+            if at.types[0] == 'curse':
+                attackers.remove(at)
+        for df in defenders:
+            if df.types[0] == 'curse':
+                defenders.remove(df)
         if self.logging:
             if attackers:
                 names = ", ".join(f"{a.name}[{a.atk}/{a.df}]" for a in attackers)
@@ -327,13 +332,9 @@ class Game:
     def end(self):
         if self.scheduleEnd:
             return
-        if self.p1.life <= 0 and self.p2.life <= 0:
-            print('draw')
-        elif self.p1.life <= 0:
-            print('p1 wins')
+        if self.p1.life <= 0:
             self.advantage -= 1
         elif self.p2.life <= 0:
-            print('p0 wins')
             self.advantage += 1
         if self.p1.life <= 0 or self.p2.life <= 0:
             self.scheduleEnd = True

@@ -122,8 +122,8 @@ Player.requestDecision = bot_request_decision
 # GAME FACTORY
 # ─────────────────────────────────────────────────────────────────────────────
 def new_game():
-    ids_a = random.choices(range(1, 68), k=20)
-    ids_b = random.choices(range(1, 68), k=20)
+    ids_a = random.choices(range(1, 68), k=20) + random.choices(range(69,76), k=random.randint(0,2))
+    ids_b = random.choices(range(1, 68), k=20) + random.choices(range(69,76), k=random.randint(0,2))
     deck_a = Deck(cardLibrary, ids_a, 0)
     deck_b = Deck(cardLibrary, ids_b, 1)
     return Game(deck_a, deck_b, logging=True)
