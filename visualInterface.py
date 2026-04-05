@@ -1,32 +1,26 @@
 """
-visualize_game.py  –  auto-bot card game with a visual viewer
-Run: python visualize_game.py
+visualInterface.py  –  auto-bot card game with a visual viewer
+Run: python visualInterface.py
 Press "Advance Turn" to step through the game.
 """
 
 import json, random, sys, os, traceback, tkinter as tk
 from tkinter import font as tkfont
 from math import ceil
-from copy import copy
 
-# ── locate cards.json next to this script ────────────────────────────────────
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CARD_PATH = os.path.join(SCRIPT_DIR, "cards.json")
-
-# ── patch sys.path so we can import the game modules ─────────────────────────
+CARD_PATH   = os.path.join(SCRIPT_DIR, "cards.json")
 sys.path.insert(0, SCRIPT_DIR)
 
-# ── load card library ─────────────────────────────────────────────────────────
 with open(CARD_PATH) as f:
     _raw = json.load(f)["cards"]
 cardLibrary = {c["id"]: c for c in _raw}
 
-# ── import game objects ───────────────────────────────────────────────────────
 from Game import Deck, Game, Player
 from Card import Card
 
 # ─────────────────────────────────────────────────────────────────────────────
-# BOT AI  (identical to testing.py)
+# BOT AI
 # ─────────────────────────────────────────────────────────────────────────────
 def card_value(card):
     return card.atk + card.df
@@ -132,28 +126,47 @@ def new_game():
     ids_b = random.choices(range(1, 68), k=20)
     deck_a = Deck(cardLibrary, ids_a, 0)
     deck_b = Deck(cardLibrary, ids_b, 1)
-    return Game(deck_a, deck_b)
+    return Game(deck_a, deck_b, logging=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PALETTE & CONSTANTS
 # ─────────────────────────────────────────────────────────────────────────────
-BG       = "#0d0f14"
-PANEL    = "#141720"
-BORDER   = "#1e2535"
-ACCENT   = "#4f8ef7"
-RED      = "#e8445a"
-GREEN    = "#3ecf8e"
-GOLD     = "#f5c542"
-MUTED    = "#5a6480"
-TEXT     = "#d0d8f0"
-TEXT_DIM = "#6b7394"
-WHITE    = "#ffffff"
-
-P1_COLOR = "#4f8ef7"   # blue
-P2_COLOR = "#e8445a"   # red
+BG        = "#0d0f14"
+PANEL     = "#141720"
+PANEL2    = "#0f1219"
+BORDER    = "#1e2535"
+ACCENT    = "#4f8ef7"
+RED       = "#e8445a"
+GREEN     = "#3ecf8e"
+GOLD      = "#f5c542"
+ORANGE    = "#f09a3e"
+PURPLE    = "#a97cf5"
+MUTED     = "#5a6480"
+TEXT      = "#d0d8f0"
+TEXT_DIM  = "#6b7394"
+WHITE     = "#ffffff"
+P1_COLOR  = "#4f8ef7"
+P2_COLOR  = "#e8445a"
 
 CARD_W, CARD_H = 110, 76
 CARD_PAD       = 8
+
+# Map log category -> (icon, fg color)
+CAT_STYLE = {
+    'phase':   (" - ",  "#4a5580"),
+    'play':    (" > ",  ACCENT),
+    'sac':     (" * ",  PURPLE),
+    'combat':  (" x ",  GOLD),
+    'kill':    (" X ",  RED),
+    'trigger': (" ! ",  ORANGE),
+    'damage':  (" v ",  "#e05555"),
+    'draw':    (" + ",  GREEN),
+    'discard': (" ^ ",  MUTED),
+    'bounce':  (" < ",  "#5ad4f5"),
+    'revive':  (" ~ ",  GREEN),
+    'stat':    (" . ",  MUTED),
+    'info':    ("   ",  TEXT_DIM),
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # MAIN APP
@@ -166,12 +179,10 @@ class GameViewer(tk.Tk):
         self.resizable(True, True)
 
         self._load_fonts()
-        self.game   = new_game()
-        self.log    = []        # list of strings for the log panel
+        self.game = new_game()
         self._build_ui()
         self._render()
 
-    # ── fonts ─────────────────────────────────────────────────────────────────
     def _load_fonts(self):
         self.f_title  = tkfont.Font(family="Courier", size=13, weight="bold")
         self.f_name   = tkfont.Font(family="Courier", size=8,  weight="bold")
@@ -179,14 +190,14 @@ class GameViewer(tk.Tk):
         self.f_label  = tkfont.Font(family="Courier", size=9,  weight="bold")
         self.f_small  = tkfont.Font(family="Courier", size=7)
         self.f_log    = tkfont.Font(family="Courier", size=8)
+        self.f_log_hd = tkfont.Font(family="Courier", size=8,  weight="bold")
         self.f_life   = tkfont.Font(family="Courier", size=22, weight="bold")
 
-    # ── build static UI skeleton ───────────────────────────────────────────────
     def _build_ui(self):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
 
-        # ── top header bar ────────────────────────────────────────────────────
+        # top header bar
         hdr = tk.Frame(self, bg=PANEL, height=48)
         hdr.grid(row=0, column=0, sticky="ew")
         hdr.columnconfigure(1, weight=1)
@@ -200,7 +211,7 @@ class GameViewer(tk.Tk):
         self.lbl_status.grid(row=0, column=1)
 
         self.btn_advance = tk.Button(
-            hdr, text="▶  ADVANCE TURN", command=self._advance,
+            hdr, text=">  ADVANCE TURN", command=self._advance,
             bg=ACCENT, fg=WHITE, activebackground="#2d5ecb",
             activeforeground=WHITE, relief="flat",
             font=self.f_label, padx=18, pady=6, cursor="hand2"
@@ -208,18 +219,18 @@ class GameViewer(tk.Tk):
         self.btn_advance.grid(row=0, column=2, padx=12, pady=6, sticky="e")
 
         self.btn_new = tk.Button(
-            hdr, text="↺  NEW GAME", command=self._new_game,
+            hdr, text="NEW GAME", command=self._new_game,
             bg=PANEL, fg=MUTED, activebackground=BORDER,
             activeforeground=TEXT, relief="flat",
             font=self.f_label, padx=12, pady=6, cursor="hand2"
         )
         self.btn_new.grid(row=0, column=3, padx=(0, 12), pady=6, sticky="e")
 
-        # ── main body: board + log ─────────────────────────────────────────────
+        # main body
         body = tk.Frame(self, bg=BG)
         body.grid(row=1, column=0, sticky="nsew")
         body.columnconfigure(0, weight=1)
-        body.columnconfigure(1, minsize=220)
+        body.columnconfigure(1, minsize=270)
         body.rowconfigure(0, weight=1)
 
         # board canvas
@@ -227,203 +238,266 @@ class GameViewer(tk.Tk):
         self.canvas.grid(row=0, column=0, sticky="nsew", padx=8, pady=8)
         self.canvas.bind("<Configure>", lambda e: self._render())
 
-        # log panel
-        log_frame = tk.Frame(body, bg=PANEL, width=220)
-        log_frame.grid(row=0, column=1, sticky="nsew", padx=(0,8), pady=8)
-        log_frame.columnconfigure(0, weight=1)
-        log_frame.rowconfigure(1, weight=1)
+        # right panel
+        right = tk.Frame(body, bg=BG)
+        right.grid(row=0, column=1, sticky="nsew", padx=(0, 8), pady=8)
+        right.columnconfigure(0, weight=1)
+        right.rowconfigure(1, weight=2)
+        right.rowconfigure(3, weight=1)
 
-        tk.Label(log_frame, text="GAME LOG", bg=PANEL, fg=MUTED,
-                 font=self.f_label, pady=6).grid(row=0, column=0)
+        # Last Turn panel
+        tk.Label(right, text="LAST TURN", bg=BG, fg=MUTED,
+                 font=self.f_label, pady=4).grid(row=0, column=0, sticky="w", padx=4)
 
-        self.log_text = tk.Text(
-            log_frame, bg=PANEL, fg=TEXT_DIM, font=self.f_log,
+        lt_frame = tk.Frame(right, bg=PANEL2, bd=0)
+        lt_frame.grid(row=1, column=0, sticky="nsew")
+        lt_frame.columnconfigure(0, weight=1)
+        lt_frame.rowconfigure(0, weight=1)
+
+        self.lt_text = tk.Text(
+            lt_frame, bg=PANEL2, fg=TEXT, font=self.f_log,
             relief="flat", wrap="word", state="disabled",
-            width=28, insertbackground=TEXT
+            width=32, insertbackground=TEXT,
+            spacing1=1, spacing3=1,
         )
-        self.log_text.grid(row=1, column=0, sticky="nsew", padx=6, pady=(0,6))
-        sb = tk.Scrollbar(log_frame, command=self.log_text.yview, bg=PANEL,
-                          troughcolor=PANEL, relief="flat")
-        sb.grid(row=1, column=1, sticky="ns")
-        self.log_text.configure(yscrollcommand=sb.set)
+        self.lt_text.grid(row=0, column=0, sticky="nsew", padx=4, pady=4)
+        lt_sb = tk.Scrollbar(lt_frame, command=self.lt_text.yview, bg=PANEL2,
+                             troughcolor=PANEL2, relief="flat")
+        lt_sb.grid(row=0, column=1, sticky="ns")
+        self.lt_text.configure(yscrollcommand=lt_sb.set)
+
+        # color tags for last-turn panel
+        for cat, (icon, color) in CAT_STYLE.items():
+            self.lt_text.tag_configure(f"icon_{cat}", foreground=color,
+                                       font=self.f_log_hd)
+            self.lt_text.tag_configure(f"msg_{cat}",  foreground=color)
+        self.lt_text.tag_configure("phase_line", foreground="#5a6ba0",
+                                   font=self.f_log_hd)
+        self.lt_text.tag_configure("turn_hdr", foreground=ACCENT,
+                                   font=self.f_log_hd)
+        self.lt_text.tag_configure("section_div", foreground=BORDER)
+
+        # Full log label + panel
+        tk.Label(right, text="FULL LOG", bg=BG, fg=MUTED,
+                 font=self.f_label, pady=4).grid(row=2, column=0, sticky="w", padx=4)
+
+        hist_frame = tk.Frame(right, bg=PANEL, bd=0)
+        hist_frame.grid(row=3, column=0, sticky="nsew")
+        hist_frame.columnconfigure(0, weight=1)
+        hist_frame.rowconfigure(0, weight=1)
+
+        self.hist_text = tk.Text(
+            hist_frame, bg=PANEL, fg=TEXT_DIM, font=self.f_small,
+            relief="flat", wrap="word", state="disabled",
+            width=32, insertbackground=TEXT,
+        )
+        self.hist_text.grid(row=0, column=0, sticky="nsew", padx=4, pady=4)
+        hist_sb = tk.Scrollbar(hist_frame, command=self.hist_text.yview, bg=PANEL,
+                               troughcolor=PANEL, relief="flat")
+        hist_sb.grid(row=0, column=1, sticky="ns")
+        self.hist_text.configure(yscrollcommand=hist_sb.set)
+
+        # color tags for full log
+        for cat, (icon, color) in CAT_STYLE.items():
+            self.hist_text.tag_configure(f"h_{cat}", foreground=color)
+        self.hist_text.tag_configure("h_phase", foreground="#3a4260")
+        self.hist_text.tag_configure("h_hdr", foreground=ACCENT)
 
     # ── advance one turn ──────────────────────────────────────────────────────
     def _advance(self):
         if self.game.scheduleEnd:
-            self._add_log("── Game over. Start a new game. ──")
+            self._append_history("-- Game over --", "info")
             return
         try:
             self.game.takeTurn()
-            self._add_log(f"Turn {self.game.turnNumber} complete")
+            self._refresh_last_turn(self.game.turnLog, self.game.turnNumber - 1)
+            self._append_turn_to_history(self.game.turnLog, self.game.turnNumber - 1)
         except Exception:
-            self._add_log("ERROR: " + traceback.format_exc().splitlines()[-1])
+            err = traceback.format_exc().splitlines()[-1]
+            self._append_history(f"ERROR: {err}", "info")
         self._render()
 
     def _new_game(self):
         self.game = new_game()
-        self.log  = []
-        self._clear_log()
-        self._add_log("New game started!")
+        self._clear_widget(self.lt_text)
+        self._clear_widget(self.hist_text)
+        self._append_history("New game started!", "info")
         self._render()
 
-    # ── log helpers ───────────────────────────────────────────────────────────
-    def _add_log(self, msg):
-        self.log_text.configure(state="normal")
-        self.log_text.insert("end", msg + "\n")
-        self.log_text.see("end")
-        self.log_text.configure(state="disabled")
+    # ── Last Turn panel ───────────────────────────────────────────────────────
+    def _refresh_last_turn(self, turn_log, turn_number):
+        w = self.lt_text
+        w.configure(state="normal")
+        w.delete("1.0", "end")
 
-    def _clear_log(self):
-        self.log_text.configure(state="normal")
-        self.log_text.delete("1.0", "end")
-        self.log_text.configure(state="disabled")
+        active = "P0" if turn_number % 2 == 0 else "P1"
+        w.insert("end", f"Turn {turn_number}  -  {active}'s turn\n", "turn_hdr")
+        w.insert("end", "-" * 28 + "\n", "section_div")
+
+        if not turn_log:
+            w.insert("end", "  (nothing happened)\n", "msg_info")
+            w.configure(state="disabled")
+            return
+
+        prev_was_phase = False
+        for entry in turn_log:
+            if isinstance(entry, dict):
+                cat, msg = entry['cat'], entry['msg']
+            else:
+                cat, msg = 'info', str(entry)
+
+            if cat == 'phase':
+                if not prev_was_phase:
+                    w.insert("end", "\n")
+                w.insert("end", f"  {msg}\n", "phase_line")
+                prev_was_phase = True
+                continue
+
+            prev_was_phase = False
+            icon, _ = CAT_STYLE.get(cat, ("   ", TEXT_DIM))
+            w.insert("end", icon, f"icon_{cat}")
+            w.insert("end", f"{msg}\n", f"msg_{cat}")
+
+        w.see("end")
+        w.configure(state="disabled")
+
+    # ── Full log panel ────────────────────────────────────────────────────────
+    def _append_turn_to_history(self, turn_log, turn_number):
+        w = self.hist_text
+        w.configure(state="normal")
+        active = "P0" if turn_number % 2 == 0 else "P1"
+        w.insert("end", f"\nT{turn_number} ({active})\n", "h_hdr")
+        for entry in turn_log:
+            if isinstance(entry, dict):
+                cat, msg = entry['cat'], entry['msg']
+            else:
+                cat, msg = 'info', str(entry)
+            if cat == 'phase':
+                continue
+            icon, _ = CAT_STYLE.get(cat, ("   ", TEXT_DIM))
+            w.insert("end", f"{icon}{msg}\n", f"h_{cat}")
+        w.see("end")
+        w.configure(state="disabled")
+
+    def _append_history(self, msg, cat="info"):
+        w = self.hist_text
+        w.configure(state="normal")
+        w.insert("end", f"{msg}\n", f"h_{cat}")
+        w.see("end")
+        w.configure(state="disabled")
+
+    def _clear_widget(self, w):
+        w.configure(state="normal")
+        w.delete("1.0", "end")
+        w.configure(state="disabled")
 
     # ─────────────────────────────────────────────────────────────────────────
-    # RENDER
+    # RENDER  (board canvas)
     # ─────────────────────────────────────────────────────────────────────────
     def _render(self):
-        c  = self.canvas
-        g  = self.game
+        c = self.canvas
+        g = self.game
         c.delete("all")
 
         W  = c.winfo_width()  or 800
         H  = c.winfo_height() or 600
         cx = W // 2
 
-        # header labels
-        turn_owner = "Player 1" if g.turnNumber % 2 == 0 else "Player 2"
+        turn_owner = "Player 0" if g.turnNumber % 2 == 0 else "Player 1"
         energy = min((g.turnNumber // 2) + 2, 10)
         self.lbl_turn.config(text=f"TURN {g.turnNumber}")
         status = f"Active: {turn_owner}  |  Energy: {energy}"
         if g.scheduleEnd:
             if g.p1.life <= 0 and g.p2.life <= 0:
-                status = "⚔  DRAW"
+                status = "DRAW"
             elif g.p1.life <= 0:
-                status = "🏆  PLAYER 2 WINS"
+                status = "PLAYER 1 WINS"
             else:
-                status = "🏆  PLAYER 1 WINS"
+                status = "PLAYER 0 WINS"
         self.lbl_status.config(text=status)
 
-        # ── layout rows ───────────────────────────────────────────────────────
-        #   row 0 (top)   : P2 hand
-        #   row 1         : P2 battlefield
-        #   row 2 (center): divider / life bars
-        #   row 3         : P1 battlefield
-        #   row 4 (bottom): P1 hand
+        row_h    = (H - 60) // 5
+        row_tops = [10 + i * row_h for i in range(5)]
+        mid_y    = row_tops[2] + row_h // 2
 
-        row_h     = (H - 60) // 5   # height per row (minus a small footer)
-        row_tops  = [10 + i * row_h for i in range(5)]
-
-        # ── draw divider ──────────────────────────────────────────────────────
-        mid_y = row_tops[2] + row_h // 2
         c.create_line(20, mid_y, W - 20, mid_y, fill=BORDER, width=1, dash=(4, 4))
 
-        # ── life bars ─────────────────────────────────────────────────────────
-        self._draw_life_bar(c, g.p2, cx - 140, mid_y - 30, 120, label="P2", color=P2_COLOR)
-        self._draw_life_bar(c, g.p1, cx + 20,  mid_y - 30, 120, label="P1", color=P1_COLOR)
+        self._draw_life_bar(c, g.p2, cx - 140, mid_y - 30, 120, "P1", P2_COLOR)
+        self._draw_life_bar(c, g.p1, cx + 20,  mid_y - 30, 120, "P0", P1_COLOR)
 
-        # graveyard counts in middle
-        c.create_text(cx, mid_y + 10, text=f"P2 gy: {len(g.p2.graveyard)}   P1 gy: {len(g.p1.graveyard)}",
+        c.create_text(cx, mid_y + 14,
+                      text=f"gy  P1:{len(g.p2.graveyard)}   P0:{len(g.p1.graveyard)}",
                       fill=MUTED, font=self.f_small)
 
-        # ── zones ─────────────────────────────────────────────────────────────
-        self._draw_zone(c, g.p2.hand,        W, row_tops[0], row_h, "P2 HAND",        P2_COLOR, face_down=True)
-        self._draw_zone(c, g.p2.battlefield, W, row_tops[1], row_h, "P2 BATTLEFIELD",  P2_COLOR)
-        self._draw_zone(c, g.p1.battlefield, W, row_tops[3], row_h, "P1 BATTLEFIELD",  P1_COLOR)
-        self._draw_zone(c, g.p1.hand,        W, row_tops[4], row_h, "P1 HAND",         P1_COLOR)
+        self._draw_zone(c, g.p2.hand,        W, row_tops[0], row_h, "P1 HAND",        P2_COLOR, face_down=True)
+        self._draw_zone(c, g.p2.battlefield, W, row_tops[1], row_h, "P1 BATTLEFIELD",  P2_COLOR)
+        self._draw_zone(c, g.p1.battlefield, W, row_tops[3], row_h, "P0 BATTLEFIELD",  P1_COLOR)
+        self._draw_zone(c, g.p1.hand,        W, row_tops[4], row_h, "P0 HAND",         P1_COLOR)
 
-        # deck sizes bottom-right
         c.create_text(W - 10, H - 10,
-                      text=f"P1 deck: {len(g.p1.deck.drawOrder)}   P2 deck: {len(g.p2.deck.drawOrder)}",
+                      text=f"deck  P0:{len(g.p1.deck.drawOrder)}  P1:{len(g.p2.deck.drawOrder)}",
                       fill=TEXT_DIM, font=self.f_small, anchor="se")
 
-    # ── life bar ──────────────────────────────────────────────────────────────
     def _draw_life_bar(self, c, player, x, y, w, label, color):
-        life     = max(player.life, 0)
-        pct      = min(life / 20, 1.0)
-        bar_h    = 14
-        # background
+        life  = max(player.life, 0)
+        pct   = min(life / 20, 1.0)
+        bar_h = 14
         c.create_rectangle(x, y + 18, x + w, y + 18 + bar_h,
                            fill=BORDER, outline="", width=0)
-        # fill
         fill_w = int(w * pct)
         if fill_w > 0:
             c.create_rectangle(x, y + 18, x + fill_w, y + 18 + bar_h,
                                fill=color, outline="", width=0)
-        # life number
-        life_txt = str(player.life)
         c.create_text(x + w // 2, y + 18 + bar_h // 2,
-                      text=life_txt, fill=WHITE, font=self.f_stat)
-        # label
+                      text=str(player.life), fill=WHITE, font=self.f_stat)
         c.create_text(x, y + 12, text=label, fill=color,
                       font=self.f_label, anchor="w")
 
-    # ── zone of cards ─────────────────────────────────────────────────────────
     def _draw_zone(self, c, cards, canvas_w, y, row_h, label, color, face_down=False):
-        # zone label on left
         c.create_text(14, y + 8, text=label, fill=color,
                       font=self.f_small, anchor="nw")
-
         if not cards:
             c.create_text(canvas_w // 2, y + row_h // 2,
-                          text="—", fill=MUTED, font=self.f_stat)
+                          text="--", fill=MUTED, font=self.f_stat)
             return
-
-        total_w  = len(cards) * (CARD_W + CARD_PAD) - CARD_PAD
-        start_x  = (canvas_w - total_w) // 2
-        card_y   = y + (row_h - CARD_H) // 2
-
+        total_w = len(cards) * (CARD_W + CARD_PAD) - CARD_PAD
+        start_x = (canvas_w - total_w) // 2
+        card_y  = y + (row_h - CARD_H) // 2
         for i, card in enumerate(cards):
             cx_ = start_x + i * (CARD_W + CARD_PAD)
             self._draw_card(c, card, cx_, card_y, color, face_down)
 
-    # ── single card ───────────────────────────────────────────────────────────
     def _draw_card(self, c, card, x, y, accent, face_down=False):
-        r = 5  # corner radius
-
-        # shadow
         c.create_rectangle(x+3, y+3, x+CARD_W+3, y+CARD_H+3,
                            fill="#000000", outline="", width=0)
-
-        # card face
-        if face_down:
-            bg = "#1a1f30"
-        else:
-            bg = "#1c2236"
-
-        # rounded-rect simulation (tkinter lacks native rounded rect on canvas easily)
+        bg = "#1a1f30" if face_down else "#1c2236"
         c.create_rectangle(x, y, x+CARD_W, y+CARD_H,
                            fill=bg, outline=accent, width=1)
-
         if face_down:
-            # draw a simple pattern
             c.create_rectangle(x+6, y+6, x+CARD_W-6, y+CARD_H-6,
-                               fill="", outline=BORDER, width=1, dash=(3,3))
+                               fill="", outline=BORDER, width=1, dash=(3, 3))
             c.create_text(x + CARD_W//2, y + CARD_H//2,
                           text="?", fill=MUTED, font=self.f_title)
             return
 
-        # accent bar at top
         c.create_rectangle(x, y, x+CARD_W, y+5, fill=accent, outline="", width=0)
 
-        # name (truncate if needed)
-        name = card.name if len(card.name) <= 14 else card.name[:12] + "…"
+        name = card.name if len(card.name) <= 14 else card.name[:12] + "..."
         c.create_text(x + CARD_W//2, y + 16,
                       text=name, fill=TEXT, font=self.f_name, anchor="center")
 
-        # type tag
         type_str = "/".join(card.types)[:12]
         c.create_text(x + CARD_W//2, y + 28,
                       text=type_str, fill=MUTED, font=self.f_small)
 
-        # divider
         c.create_line(x+6, y+36, x+CARD_W-6, y+36, fill=BORDER)
 
-        # ATK / DEF
-        c.create_text(x + 18, y + 50, text=f"⚔ {card.atk}", fill=RED,  font=self.f_stat)
-        c.create_text(x + CARD_W - 18, y + 50, text=f"🛡 {card.df}", fill=GREEN, font=self.f_stat)
+        # gold tint if stat was modified by a trigger
+        atk_color = GOLD  if card.atk != card.base_atk else RED
+        def_color = GOLD  if card.df  != card.base_df  else GREEN
+        c.create_text(x + 18,          y + 50, text=f"A {card.atk}", fill=atk_color, font=self.f_stat)
+        c.create_text(x + CARD_W - 18, y + 50, text=f"D {card.df}",  fill=def_color, font=self.f_stat)
 
-        # cost hint
         cost_str = f"E:{card.costs['energy']}"
         if card.costs['life']:
             cost_str += f" L:{card.costs['life']}"
@@ -436,6 +510,6 @@ class GameViewer(tk.Tk):
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     app = GameViewer()
-    app.minsize(780, 560)
-    app.geometry("1000x660")
+    app.minsize(820, 560)
+    app.geometry("1150x680")
     app.mainloop()

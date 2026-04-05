@@ -241,6 +241,8 @@ class primDmg(primitiveEffect):
                 game.kill(targets)
         elif type(targets) == type(game.p1):
             targets.life -= self.pow
+            if game.logging:
+               game.turnLog.append({'cat': 'trigger', 'msg': f"Trigger deals {self.pow} dmg to P{targets.deck.pID} (life: {targets.life})"})
             if targets.life <= 0:
                 game.end()
 class primKill(primitiveEffect):
@@ -266,6 +268,8 @@ class primModAtk(primitiveEffect):
         if type(targets) == list:
             super().run(game, targets)
         if type(targets) == Card:
+            if game.logging:
+                game.turnLog.append({'cat': 'stat', 'msg': f"Trigger: {targets.name} ATK {targets.atk - self.pow} -> {targets.atk}"})
             targets.atk += self.pow
             if targets.atk < 0:
                 targets.atk = 0
@@ -274,6 +278,8 @@ class primModDef(primitiveEffect):
         if type(targets) == list:
             super().run(game, targets)
         if type(targets) == Card:
+            if game.logging:
+                game.turnLog.append({'cat': 'stat', 'msg': f"Trigger: {targets.name} DEF {targets.df - self.pow} -> {targets.df}"})
             targets.df += self.pow
             if targets.df < 0:
                 targets.df = 0
