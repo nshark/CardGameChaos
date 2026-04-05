@@ -24,7 +24,7 @@ class Card:
             return
         self.entered = True
         for i in range(len(self.triggers)):
-            if self.triggers[i].primary == 'entranceThis' or self.triggers[i].primary == 'exitThis' or self.triggers[i].primary == 'onKill':
+            if self.triggers[i].primary == 'entranceThis' or self.triggers[i].primary == 'exitThis' or self.triggers[i].primary == 'onKill' or self.triggers[i].primary == 'onThisDmgPlayer':
                 game.addHandler(self.triggers[i].primary, self.triggers[i].check, self.effects[i].execute, cID=self.id)
             else:
                 game.addHandler(self.triggers[i].primary, self.triggers[i].check, self.effects[i].execute)
@@ -35,7 +35,7 @@ class Card:
         self.atk = self.base_atk  # replace the += logic
         self.df = self.base_df
         for i in range(len(self.triggers)):
-            if self.triggers[i].primary == 'entranceThis' or self.triggers[i].primary == 'exitThis' or self.triggers[i].primary == 'onKill':
+            if self.triggers[i].primary == 'entranceThis' or self.triggers[i].primary == 'exitThis' or self.triggers[i].primary == 'onKill' or self.triggers[i].primary == 'onThisDmgPlayer':
                 game.removeHandler(self.triggers[i].primary, self.triggers[i].check, self.effects[i].execute, cID=self.id)
             else:
                 game.removeHandler(self.triggers[i].primary, self.triggers[i].check, self.effects[i].execute)
@@ -60,11 +60,15 @@ class producingTrigger(primitiveTrigger):
 
 
 def triggerFactory(triggerData, pCard):
+    if type(triggerData) == int:
+        return triggerData
     if type(triggerData) == str:
         if triggerData in ['this', 'lastEntered', 'lastExited', 'lastKilled', 'target', 'self', 'opponent', 'allOpCards', 'allFrCards']:
             return producingTrigger(pCard, triggerData)
         return primitiveNonProducingTrigger(triggerData)
-    if type(triggerData) == dict:
+    if type(triggerData) == dict and triggerData['operand'] == 'filter':
+        return producingTrigger(pCard, triggerData['actionData'])
+    else:
         return Trigger(triggerData, pCard)
 
 class Trigger(primitiveTrigger):
@@ -82,7 +86,7 @@ class Trigger(primitiveTrigger):
 
     def check(self, game, eventType):
         for trigger in self.triggers:
-            if trigger.check(game, eventType) is None:
+            if type(trigger) != int and trigger.check(game, eventType) is None:
                 return None
         if self.operand == "and":
             for trigger in self.triggers:
@@ -95,18 +99,25 @@ class Trigger(primitiveTrigger):
                     return True
             return False
         if self.operand == "if":
-            triggerA = self.triggers[0]
-            triggerB = self.triggers[1]
+            valA = self.triggers[0]
+            valB = self.triggers[1]
+            if (type(valA) != int):
+                valA = valA.check(game, eventType)
+            if (type(valB) != int):
+                valB = valB.check(game, eventType)
             if self.cmp == '==':
-                return triggerA.check(game, eventType) == triggerB.check(game, eventType)
+                return valA == valB
             if self.cmp == '<':
-                return triggerA.check(game, eventType) < triggerB.check(game, eventType)
+                return valA < valB
             if self.cmp == '<=':
-                return triggerA.check(game, eventType) <= triggerB.check(game, eventType)
+                return valA <= valB
             if self.cmp == 'contains':
-                return triggerB.check(game, eventType) in triggerA.check(game, eventType)
+                return valB in valA
         if self.operand == "access":
-            return getattr(self.triggers[0].check(game, eventType), self.access)
+            toReturn = getattr(self.triggers[0].check(game, eventType), self.access)
+            if callable(toReturn):
+                return toReturn()
+            return toReturn
 
 
 
@@ -140,7 +151,9 @@ def primEffFactory(effectID, pow, pCard):
         return primRevive(pow, pCard)
 
 def primActFactory(pCard, actionID):
-    if actionID == 'this':
+    if type(actionID) != str:
+        return filterAction(pCard, actionID)
+    elif actionID == 'this':
         return primThis(pCard)
     elif actionID == 'lastEntered':
         return primLastEntered(pCard)
@@ -220,7 +233,7 @@ class primitiveEffect():
         if type(pow) == int:
             self.pow = pow
         else:
-            self.pow = Trigger(pow, pCard)
+            self.pow = triggerFactory(pow, pCard)
     def run(self, game, targets):
         if targets is None:
             return
@@ -336,3 +349,55 @@ class primitiveNonProducingTrigger(primitiveTrigger):
         self.primary = triggerData
     def check(self, game, eventType):
         return eventType == self.primary
+
+def filterFactory(filterData):
+    filterArgs = filterData['args']
+    if filterData['type'] == 'attr>':
+        return primitiveAttributeGreaterThan(filterArgs)
+    elif filterData['type'] == 'attr<':
+        return primitiveAttributeLessThan(filterArgs)
+    elif filterData['type'] == 'attr=':
+        return primitiveAttributeContains(filterArgs)
+
+class primitiveFilter():
+    def __init__(self, args):
+        self.args = args
+    def filter(self, card):
+        return True
+
+class primitiveAttributeGreaterThan(primitiveFilter):
+    def filter(self, card):
+        return getattr(card, self.args['attr']) > self.args['a']
+class primitiveAttributeLessThan(primitiveFilter):
+    def filter(self, card):
+        return getattr(card, self.args['attr']) < self.args['a']
+class primitiveAttributeContains(primitiveFilter):
+    def filter(self, card):
+        return self.args['a'] in getattr(card, self.args['attr'])
+
+
+class filterAction(primitiveAction):
+    def __init__(self, pCard, actionData):
+        super().__init__(pCard)
+        self.actions = []
+        for action in actionData['actions']:
+            self.actions.append(primActFactory(pCard, action))
+        self.fil = filterFactory(actionData['filter'])
+    def run(self, game):
+        toFilter = []
+        for action in self.actions:
+            toAdd = action.run(game)
+            def flattenList(l):
+                for item in l:
+                    if type(item) == list:
+                        flattenList(item)
+                    else:
+                        toFilter.append(item)
+            flattenList(toAdd)
+        toReturn = []
+        for item in toFilter:
+            if self.fil.filter(item):
+                toReturn.append(item)
+        return toReturn
+
+

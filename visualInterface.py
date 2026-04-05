@@ -129,8 +129,8 @@ Player.requestDecision = bot_request_decision
 # GAME FACTORY
 # ─────────────────────────────────────────────────────────────────────────────
 def new_game():
-    ids_a = random.choices(regularCards, k=20)+random.choices(curseCards, k=random.randint(0,2))
-    ids_b = random.choices(regularCards, k=20)+random.choices(curseCards, k=random.randint(0,2))
+    ids_a = random.choices(regularCards, k=18)+[79, 79]+random.choices(curseCards, k=random.randint(0,2))
+    ids_b = random.choices(regularCards, k=18)+[79, 79]+random.choices(curseCards, k=random.randint(0,2))
     deck_a = Deck(cardLibrary, ids_a, 0)
     deck_b = Deck(cardLibrary, ids_b, 1)
     return Game(deck_a, deck_b, logging=True)
@@ -418,9 +418,9 @@ class GameViewer(tk.Tk):
             if g.p1.life <= 0 and g.p2.life <= 0:
                 status = "DRAW"
             elif g.p1.life <= 0:
-                status = "PLAYER 1 WINS"
-            else:
                 status = "PLAYER 0 WINS"
+            else:
+                status = "PLAYER 1 WINS"
         self.lbl_status.config(text=status)
 
         row_h    = (H - 60) // 5

@@ -827,7 +827,6 @@
         "life": 0
       }
     },
-
     {
       "id": 23,
       "types": [
@@ -861,7 +860,6 @@
         "life": 0
       }
     },
-
     {
       "id": 24,
       "types": [
@@ -921,7 +919,6 @@
         "life": 2
       }
     },
-
     {
       "id": 25,
       "types": [
@@ -999,7 +996,6 @@
         "life": 0
       }
     },
-
     {
       "id": 27,
       "types": [
@@ -2768,8 +2764,11 @@
         "life": 0
       }
     },
-    {"id": 77,
-      "types": ["Spell"],
+    {
+      "id": 77,
+      "types": [
+        "Spell"
+      ],
       "name": "Blood For Blood",
       "atk": 0,
       "def": 0,
@@ -2780,7 +2779,8 @@
             "targeting": "target",
             "action": "kill",
             "pow": 0
-          }},
+          }
+        },
         {
           "trigger": "exitAny",
           "effect": {
@@ -2799,6 +2799,184 @@
       "costs": {
         "sacCost": 0,
         "energy": 2,
+        "life": 0
+      }
+    },
+    {
+      "id": 78,
+      "name": "Animated Bomb",
+      "types": [
+        "Mage"
+      ],
+      "atk": 0,
+      "def": 1,
+      "abilt": [
+        {
+          "trigger": "exitThis",
+          "effect": {
+            "targeting": "allOpCards",
+            "action": "dmg",
+            "pow": {
+              "operand": "access",
+              "triggers": [
+                {
+                  "operand": "filter",
+                  "actionData": {
+                    "actions": [
+                      "allFrCards"
+                    ],
+                    "filter": {
+                      "type": "attr=",
+                      "args": {
+                        "attr": "types",
+                        "a": "Mage"
+                      }
+                    }
+                  }
+                }
+              ],
+              "access": "__len__"
+            }
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 1,
+        "life": 0
+      }
+    },
+    {
+      "id": 79,
+      "name": "Cursed Fodder",
+      "types": [
+        "Dark",
+        "Undead"
+      ],
+      "atk": 8,
+      "def": 1,
+      "abilt": [
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": -8
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "onThisDmgPlayer",
+              {
+                "operand": "if",
+                "cmp": "<",
+                "triggers": [
+                  0,
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "this"
+                    ],
+                    "access": "atk"
+                  }
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "opponent",
+            "action": "dmg",
+            "pow": -8
+          }
+        },
+        {
+          "trigger": "onThisDmgPlayer",
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": -8
+          }
+        },
+        {
+          "trigger": "onKill",
+          "effect": {
+            "targeting": "lastExited",
+            "action": "revive",
+            "pow": 0
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "exitThis",
+              {
+                "operand": "if",
+                "cmp": "<",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "this"
+                    ],
+                    "access": "atk"
+                  },
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "this"
+                    ],
+                    "access": "df"
+                  }
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "revive",
+            "pow": 4
+          }
+        },
+        {
+          "trigger": {
+            "operand": "and",
+            "triggers": [
+              "exitThis",
+              {
+                "operand": "if",
+                "cmp": "<",
+                "triggers": [
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "this"
+                    ],
+                    "access": "atk"
+                  },
+                  {
+                    "operand": "access",
+                    "triggers": [
+                      "this"
+                    ],
+                    "access": "df"
+                  }
+                ]
+              }
+            ]
+          },
+          "effect": {
+            "targeting": "this",
+            "action": "modAtk",
+            "pow": -8
+          }
+        }
+      ],
+      "costs": {
+        "sacCost": 0,
+        "energy": 1,
         "life": 0
       }
     }

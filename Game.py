@@ -23,7 +23,7 @@ class Game:
         self.turnLog = []
         self.p1 = Player(DeckA)
         self.p2 = Player(DeckB)
-        self.handlers = {'entranceThis':{}, 'exitThis':{}, 'entranceAny':[], 'exitAny':[], 'onKill': {}}
+        self.handlers = {'entranceThis':{}, 'exitThis':{}, 'entranceAny':[], 'exitAny':[], 'onKill': {}, 'onThisDmgPlayer': {}}
 
     def __str__(self):
         def fmt_card(card):
@@ -177,6 +177,10 @@ class Game:
                         f"  {a_card.name} deals {a_card.atk} to {dLabel} "
                         f"({life_before} → {defender.life})"))
                 attackers.pop(0)
+                if a_card.id in self.handlers['onThisDmgPlayer']:
+                    for (verifier, handler) in self.handlers['onThisDmgPlayer'][a_card.id]:
+                        if verifier(self, 'onThisDmgPlayer'):
+                            handler(self)
                 if defender.life <= 0:
                     self.end()
 
@@ -203,11 +207,12 @@ class Game:
                 f"P{card.pID} plays {card.name} [{card.atk}/{card.df}]"
                 f"  ({', '.join(cost_parts)})"))
         if card.id in self.handlers['entranceThis']:
-            if self.handlers['entranceThis'][card.id][0](self, 'entranceThis'):
-                if self.logging:
-                    self.turnLog.append(_ev('trigger',
-                        f"  entranceThis triggers for {card.name}"))
-                self.handlers['entranceThis'][card.id][1](self)
+            for (verifier, handler) in self.handlers['entranceThis'][card.id]:
+                if verifier(self, 'entranceThis'):
+                    if self.logging:
+                        self.turnLog.append(_ev('trigger',
+                            f"  entranceThis triggers for {card.name}"))
+                    handler(self)
         if not noAnyEntrance:
             for entranceAnyTriggers in self.handlers['entranceAny']:
                 if entranceAnyTriggers[0](self, 'entranceAny'):
@@ -243,17 +248,19 @@ class Game:
             return
 
         if card.id in self.handlers['exitThis']:
-            if self.handlers['exitThis'][card.id][0](self, 'exitThis'):
-                if self.logging:
-                    self.turnLog.append(_ev('trigger',
-                        f"  exitThis triggers for {card.name}"))
-                self.handlers['exitThis'][card.id][1](self)
+            for (verifier, handler) in self.handlers['exitThis'][card.id]:
+                if verifier(self, 'exitThis'):
+                    if self.logging:
+                        self.turnLog.append(_ev('trigger',
+                            f"  exitThis triggers for {card.name}"))
+                    handler(self)
         if culprit is not None and culprit.id in self.handlers['onKill']:
-            if self.handlers['onKill'][culprit.id][0](self, 'onKill'):
-                if self.logging:
-                    self.turnLog.append(_ev('trigger',
-                        f"  onKill triggers for {culprit.name}"))
-                self.handlers['onKill'][culprit.id][1](self)
+            for (verifier, handler) in self.handlers['onKill'][culprit.id]:
+                if verifier(self, 'onKill'):
+                    if self.logging:
+                        self.turnLog.append(_ev('trigger',
+                           f"  onKill triggers for {culprit.name}"))
+                    handler(self)
         for exitAnyTriggers in self.handlers['exitAny']:
             if exitAnyTriggers[0](self, 'exitAny'):
                 if self.logging:
@@ -268,16 +275,20 @@ class Game:
     def addHandler(self, type, verifier, effect, cID=0):
         if cID == 0:
             self.handlers[type].append((verifier, effect))
+        elif not cID in self.handlers[type]:
+            self.handlers[type][cID] = [(verifier, effect)]
         else:
-            self.handlers[type][cID] = (verifier, effect)
+            self.handlers[type][cID].append((verifier, effect))
 
     def removeHandler(self, type, verifier, effect, cID=0):
         if cID == 0:
             if (verifier, effect) in self.handlers[type]:
                 self.handlers[type].remove((verifier, effect))
         else:
-            if cID in self.handlers[type]:
+            if cID in self.handlers[type] and len(self.handlers[type][cID]) == 1:
                 self.handlers[type].pop(cID)
+            else:
+                self.handlers[type][cID].remove((verifier, effect))
 
     def draw(self, player, num):
         pLabel = f"P{player.deck.pID}"
