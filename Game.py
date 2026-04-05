@@ -82,6 +82,7 @@ class Game:
                 card.df -= 1
             elif card.types == ['curse'] and card.df == 0:
                 self.kill(card)
+
         self.turnNumber += 1
         if self.scheduleEnd:
             self.reset()
@@ -127,6 +128,8 @@ class Game:
             for entranceAnyTriggers in self.handlers['entranceAny']:
                 if entranceAnyTriggers[0](self, 'entranceAny'):
                     entranceAnyTriggers[1](self)
+        if card.df == 0:
+            self.kill(card)
 
     def isActive(self, card):
         return card in self.p1.battlefield or card in self.p2.battlefield

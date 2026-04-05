@@ -1,6 +1,3 @@
-
-
-
 def compCardAtk(a, b):
     return a.atk - b.atk
 class Card:
@@ -280,6 +277,8 @@ class primModDef(primitiveEffect):
             targets.df += self.pow
             if targets.df < 0:
                 targets.df = 0
+            if targets.df == 0:
+                game.kill(targets)
 class primBounce(primitiveEffect):
     def run(self, game, targets):
         if type(targets) == list:
