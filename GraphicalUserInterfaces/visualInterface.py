@@ -6,10 +6,9 @@ Press "Advance Turn" to step through the game.
 
 import json, random, sys, os, traceback, tkinter as tk
 from tkinter import font as tkfont
-from math import ceil
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CARD_PATH   = os.path.join(SCRIPT_DIR, "cards.json")
+CARD_PATH   = os.path.join(SCRIPT_DIR, "../Harness/cards.json")
 sys.path.insert(0, SCRIPT_DIR)
 
 with open(CARD_PATH) as f:
@@ -23,8 +22,8 @@ for i in range(len(cardData)):
         regularCards.append(cardData[i]['id'])
     else:
         curseCards.append(cardData[i]['id'])
-from Game import Deck, Game, Player
-from Card import Card
+from Harness.Game import Deck, Game, Player
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # BOT AI

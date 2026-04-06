@@ -2,12 +2,11 @@
 import random
 import json
 import traceback
-from math import ceil
-from Game import Deck, Game, Player
-from Card import Card
+from Harness.Game import Deck, Game, Player
+from stateHelper import GameState
 
 # ── Load card library ──────────────────────────────────────────────────────────
-cardPath = 'cards.json'
+cardPath = './Harness/cards.json'
 with open(cardPath, 'r') as f:
     cardData = json.load(f)['cards']
 regularCards = []
@@ -47,7 +46,9 @@ def favorable_trade(attacker, defender):
 def bot_request_decision(self, type, game, num=0, energy=0, attackers=[], availableDefenders=[], pCard=None):
     pID = self.deck.cards[0].pID
     opponent = bot_opponent(self, game)
-
+    if not hasattr(bot_request_decision, 'states'):
+        bot_request_decision.states = []
+    bot_request_decision.states.append(GameState(game, pID, type))
     # ── Play cards ────────────────────────────────────────────────────────────
     if type == 'playCards':
         # Candidates: affordable without sacrifices first
@@ -213,7 +214,8 @@ def check_invariants(game, context=""):
     return errors
 
 # ── Single game runner ─────────────────────────────────────────────────────────
-def run_game(game_number, max_turns=200):
+def run_game(game_number, max_turns=200, returnStates=False):
+    bot_request_decision.states = []
     result = {
         'game': game_number,
         'turns': 0,
@@ -258,8 +260,7 @@ def run_game(game_number, max_turns=200):
 
     if result['outcome'] is None and result['exception'] is None:
         result['outcome'] = 'completed'
-
-    return result
+    return bot_request_decision.states
 
 # ── Test suite ─────────────────────────────────────────────────────────────────
 def run_suite(n_games=50):
@@ -313,6 +314,5 @@ def run_suite(n_games=50):
 
 
 if __name__ == '__main__':
-    output = open('cardSynergies.json', 'w')
-    json.dump(run_suite(n_games=10000),output)
-    output.close()
+    print(run_game(0))
+

@@ -1,7 +1,7 @@
 import random
 from math import ceil
 
-from Card import Card
+from Harness.Card import Card
 
 # ── Log-event categories ──────────────────────────────────────────────────────
 # Each entry in turnLog is now a dict:  { 'cat': str, 'msg': str }
@@ -10,7 +10,6 @@ from Card import Card
 
 def _ev(cat, msg):
     return {'cat': cat, 'msg': msg}
-
 
 class Game:
     def __init__(self, DeckA, DeckB, logging=False):

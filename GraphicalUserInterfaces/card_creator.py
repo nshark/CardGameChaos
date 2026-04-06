@@ -1,7 +1,7 @@
 import json
 import tkinter as tk
 from tkinter import ttk, messagebox
-from Card import Card
+from Harness.Card import Card
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -24,7 +24,7 @@ EFFECT_TARGETING = [
     "target", "self", "opponent", "allOpCards", "allFrCards",
 ]
 EFFECT_ACTIONS = ["dmg", "kill", "draw", "discard", "modAtk", "modDef", "bounce", "revive"]
-CARDS_PATH = "/Users/noah/PycharmProjects/CardGameChaos/cards.json"
+CARDS_PATH = "/cards.json"
 COMPLEX_SENTINEL = "complex(...)"
 PRIMITIVE_FILTERS = ['attr>', 'attr<', 'attr=']
 
