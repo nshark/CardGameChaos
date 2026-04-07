@@ -1,5 +1,5 @@
 import json
-from enum import IntEnum as Enum
+from enum import IntEnum as Enum, IntEnum
 
 from Harness.Card import Card
 
@@ -10,11 +10,11 @@ EventTriggers = Enum('EventTriggers',  ["entranceThis", "exitThis", "entranceAny
 SimpleProducers = Enum('SimpleProducers', ["this", "lastEntered", "lastExited", "lastKilled","target", "self", "opponent", "allOpCards", "allFrCards"])
 Operands = Enum('Operands', ["and", "or", "if", "access", "filter"])
 ComparisonValues = Enum('ComparisonValues', ["==", "<", "<=", "contains"])
-AccessOptions = Enum('AccessOptions', ["types", "atk", "df", "__len__"])
+AccessOptions = Enum('AccessOptions', ["types", "atk", "df", "len"])
 EffectActions = Enum('EffectActions', ["dmg", "kill", "draw", "discard", "modAtk", "modDef", "bounce", "revive"])
 FilterOptions = Enum('FilterOptions', ['attr>', 'attr<', 'attr='])
 DecisionTypes = Enum('DecisionTypes', ['playCards', 'attackers', 'defenders', 'discard', 'target'])
-AbilityKeys = Enum('AbilityKeys', ['access', 'operand', 'triggers', 'effect', 'trigger', 'pow', 'action', 'cmp', 'targeting'])
+AbilityKeys = Enum('AbilityKeys', ['access', 'operand', 'filter', 'triggers', 'effect', 'trigger', 'pow', 'action', 'cmp', 'targeting', 'actionData', 'actions', 'type', 'attr', 'a', 'args'])
 def enumContains(key, en):
     if not isinstance(key, str):
         return False
@@ -34,6 +34,8 @@ def loadCardLibrary():
 def recurseEncoding(data):
     toReturn = {}
     for key in data.keys():
+        if (data[key] == '__len__'):
+            data[key] = 'len'
         if isinstance(data[key], list):
             toReturn[AbilityKeys[key].value] = []
             for item in data[key]:
@@ -85,23 +87,23 @@ class GameState():
 
         if activePID == 0:
             self.activePlayer = PlayerState(game.p1)
-            self.inactivePlayer = PlayerState(game.p2, inactive=True)
+            self.inactivePlayer = PlayerState(game.p2)
         else:
             self.activePlayer = PlayerState(game.p2)
-            self.inactivePlayer = PlayerState(game.p1, inactive=True)
+            self.inactivePlayer = PlayerState(game.p1)
 
 class PlayerState():
-    def __init__(self, player, inactive=False):
+    def __init__(self, player):
         self.life = player.life
-        if not inactive:
-            self.hand = [card.id[0] for card in player.hand]
+        self.hand = [card.id[0] for card in player.hand]
         self.battlefield = [ActiveCardState(card) for card in player.battlefield]
 
 class ActiveCardState():
-    def __init__(self, card):
+    cardLib = loadCardLibrary()
+    def __init__(self, card, cID=0):
+        if (cID != 0):
+            card = Card(self.cardLib[cID], 0, 0)
         self.atk = card.atk
         self.df = card.df
-        self.id = card.id
         self.types = [Types[tp].value for tp in card.types]
-        self.abilityData = loadAbilityEncodingForCID(self.id[0])
-
+        self.abilityData = loadAbilityEncodingForCID(card.id[0])

@@ -4,7 +4,7 @@ import json
 import traceback
 from Harness.Game import Deck, Game, Player
 from stateHelper import GameState
-
+from botTraining import game_stateEncoder
 # ── Load card library ──────────────────────────────────────────────────────────
 cardPath = './Harness/cards.json'
 with open(cardPath, 'r') as f:
@@ -260,7 +260,9 @@ def run_game(game_number, max_turns=200, returnStates=False):
 
     if result['outcome'] is None and result['exception'] is None:
         result['outcome'] = 'completed'
-    return bot_request_decision.states
+    if returnStates:
+        return [state for state in bot_request_decision.states]
+    return result
 
 # ── Test suite ─────────────────────────────────────────────────────────────────
 def run_suite(n_games=50):
@@ -314,5 +316,12 @@ def run_suite(n_games=50):
 
 
 if __name__ == '__main__':
-    print(run_game(0))
+    game_states = run_game(0, returnStates=True)
+    game_encodings = []
+    for gs in game_states:
+        game_encodings.append(game_stateEncoder(gs))
+    print(len(game_encodings))
+    print(game_encodings[-1])
+    print(game_states[-1])
+
 
