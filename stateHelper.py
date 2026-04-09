@@ -97,6 +97,7 @@ class PlayerState():
         self.life = player.life
         self.hand = [card.id[0] for card in player.hand]
         self.battlefield = [ActiveCardState(card) for card in player.battlefield]
+        self.graveyard = [ActiveCardState(card) for card in player.graveyard]
 
 class ActiveCardState():
     cardLib = loadCardLibrary()

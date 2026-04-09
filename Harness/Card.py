@@ -127,8 +127,10 @@ class Effect:
     def __init__(self, effectData, pCard):
         self.targetingAction = primActFactory(pCard, effectData['targeting'])
         self.effect = primEffFactory(effectData['action'], effectData['pow'], pCard)
-    def execute(self, game):
-        targets = self.targetingAction.run(game)
+    def execute(self, game, search=False):
+        targets = self.targetingAction.run(game,search=search)
+        if targets == 'target' and search:
+            return self.effect
         self.effect.run(game, targets)
 
 
@@ -179,51 +181,53 @@ class primitiveAction:
         return 'default'
 
 class primThis(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
         return self.parentCard
 
 class primLastEntered(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
         return game.lastEntered
 
 class primLastExited(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
         return game.lastExited
 
 class primLastKilled(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
         return self.parentCard.lKill
 
 class primTarget(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
+        if search:
+            return 'target'
         if (self.parentCard.pID == 0):
             return game.p1.requestDecision('target', game, pCard=self.parentCard)
         else:
             return game.p2.requestDecision('target', game, pCard=self.parentCard)
 
 class primSelf(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
         if (self.parentCard.pID == 0):
             return game.p1
         else:
             return game.p2
 
 class primOpponent(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
         if (self.parentCard.pID == 0):
             return game.p2
         else:
             return game.p1
 
 class primAllOpCards(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
         if (self.parentCard.pID == 0):
             return game.p2.battlefield
         else:
             return game.p1.battlefield
 
 class primAllFrCards(primitiveAction):
-    def run(self, game):
+    def run(self, game, search=False):
         if (self.parentCard.pID == 0):
             return game.p1.battlefield
         else:

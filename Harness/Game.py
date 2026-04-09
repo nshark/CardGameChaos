@@ -1,6 +1,6 @@
 import random
 from math import ceil
-
+from itertools import chain
 from Harness.Card import Card
 
 # ── Log-event categories ──────────────────────────────────────────────────────
@@ -54,8 +54,45 @@ class Game:
         ])
 
     def takeTurn(self):
+
         self.turnLog = []
-        energy = min((self.turnNumber // 2) + 2, 10)
+        if self.turnNumber % 2 == 0:
+            player = self.p1
+            pLabel = "P0"
+        else:
+            player = self.p2
+            pLabel = "P1"
+
+        self.drawStep()
+
+        cardOrder, toSac = player.requestDecision('playCards', self, energy=min((self.turnNumber // 2) + 2, 10))
+
+        self.playPhase(cardOrder, toSac)
+
+        # Combat phase
+        if self.turnNumber > 0:
+            if self.logging:
+                self.turnLog.append(_ev('phase', "Combat phase"))
+            self.combatPhase()
+
+        # Curse tick
+        self.curseTick()
+        if self.scheduleEnd:
+            self.reset()
+
+    def curseTick(self):
+        for card in list(self.p1.battlefield + self.p2.battlefield):
+            if card.types == ['Curse'] and card.df > 0:
+                card.df -= 1
+                if self.logging:
+                    self.turnLog.append(_ev('stat',
+                                            f"Curse {card.name} ticks to def {card.df}"))
+            elif card.types == ['Curse'] and card.df == 0:
+                self.removeFromBattlefield(card)
+        self.turnNumber += 1
+
+    def drawStep(self):
+        self.turnLog = []
         if self.turnNumber % 2 == 0:
             player = self.p1
             pLabel = "P0"
@@ -65,7 +102,7 @@ class Game:
 
         if self.logging:
             self.turnLog.append(_ev('phase',
-                f"{pLabel}'s Turn  (energy: {energy}, life: {player.life})"))
+                f"{pLabel}'s Turn  (energy: {min((self.turnNumber // 2) + 2, 10)}, life: {player.life})"))
 
         # Draw phase
         drawn = max(1, 3 - len(player.hand))
@@ -77,10 +114,22 @@ class Game:
         if self.logging:
             self.turnLog.append(_ev('phase', "Play phase"))
 
-        cardOrder, toSac = player.requestDecision('playCards', self, energy=energy)
+    def playPhase(self, cardOrder, toSac, search=False):
+        self.turnLog = []
+        if self.turnNumber % 2 == 0:
+            player = self.p1
+            pLabel = "P0"
+        else:
+            player = self.p2
+            pLabel = "P1"
 
-        totalPossibleSacEnergy = sum(sac.atk for sac in toSac)
+        play_or_sac_Order = []
+        try:
+            totalPossibleSacEnergy = sum(sac.atk for sac in chain.from_iterable(toSac))
+        except TypeError:
+            totalPossibleSacEnergy = 0
         sacEnergy = 0
+        energy = min((self.turnNumber // 2) + 2, 10)
 
         for card in cardOrder:
             if card in player.hand:
@@ -93,9 +142,12 @@ class Game:
                             sacEnergy += sacrifice.atk
                             if self.logging:
                                 self.turnLog.append(_ev('sac',
-                                    f"{pLabel} sacrifices {sacrifice.name} "
-                                    f"[{sacrifice.atk}/{sacrifice.df}]"))
-                            self.kill(sacrifice, card)
+                                                        f"{pLabel} sacrifices {sacrifice.name} "
+                                                        f"[{sacrifice.atk}/{sacrifice.df}]"))
+                            if search:
+                                play_or_sac_Order.append((-1, sacrifice))
+                            else:
+                                self.kill(sacrifice)
                         else:
                             toSac.pop(-1)
                     energy -= card.costs['energy']
@@ -103,29 +155,15 @@ class Game:
                     if sacEnergy >= card.costs['sacCost']:
                         sacEnergy -= card.costs['sacCost']
                         totalPossibleSacEnergy -= card.costs['sacCost']
-                        self.play(card)
+                        if search:
+                            play_or_sac_Order.append((1, card))
+                        else:
+                            self.play(card)
+        if search:
+            return play_or_sac_Order
+        return None
 
-        # Combat phase
-        if self.turnNumber > 0:
-            if self.logging:
-                self.turnLog.append(_ev('phase', "Combat phase"))
-            self.combatPhase()
-
-        # Curse tick
-        for card in list(self.p1.battlefield + self.p2.battlefield):
-            if card.types == ['Curse'] and card.df > 0:
-                card.df -= 1
-                if self.logging:
-                    self.turnLog.append(_ev('stat',
-                        f"Curse {card.name} ticks to def {card.df}"))
-            elif card.types == ['Curse'] and card.df == 0:
-                self.kill(card)
-
-        self.turnNumber += 1
-        if self.scheduleEnd:
-            self.reset()
-
-    def combatPhase(self):
+    def combatPhase(self, search=False, attackers=None, defenders=None):
         if self.turnNumber % 2 == 0:
             attacker = self.p1
             aLabel = "P0"
@@ -136,9 +174,9 @@ class Game:
             aLabel = "P1"
             defender = self.p1
             dLabel = "P0"
-
-        attackers = attacker.requestDecision('attackers', self, availableDefenders=defender.battlefield)
-        defenders = defender.requestDecision('defenders', self, attackers=attackers)
+        if not search:
+            attackers = attacker.requestDecision('attackers', self, availableDefenders=defender.battlefield)
+            defenders = defender.requestDecision('defenders', self, attackers=attackers)
         attackers.sort(key=lambda x: x.atk, reverse=True)
         for at in attackers:
             if at.types[0] == 'Curse':
@@ -156,7 +194,9 @@ class Game:
             if defenders:
                 names = ", ".join(f"{d.name}[{d.atk}/{d.df}]" for d in defenders)
                 self.turnLog.append(_ev('combat', f"{dLabel} blocks with: {names}"))
-
+        toFight = []
+        getThrough = []
+        totalDamage = 0
         while len(attackers) > 0:
             if len(defenders) > 0:
                 a_card, d_card = attackers[0], defenders[0]
@@ -164,13 +204,19 @@ class Game:
                     self.turnLog.append(_ev('combat',
                         f"  {a_card.name}[{a_card.atk}/{a_card.df}]"
                         f" vs {d_card.name}[{d_card.atk}/{d_card.df}]"))
-                self.fight(attackers[0], defenders[0])
+                if not search:
+                    self.fight(attackers[0], defenders[0])
+                else:
+                    toFight.append((attackers[0], defenders[0]))
                 attackers.remove(attackers[0])
                 defenders.remove(defenders[0])
             else:
                 a_card = attackers[0]
                 life_before = defender.life
-                defender.life -= a_card.atk
+                if not search:
+                    defender.life -= a_card.atk
+                else:
+                    getThrough.append([a_card])
                 if self.logging:
                     self.turnLog.append(_ev('damage',
                         f"  {a_card.name} deals {a_card.atk} to {dLabel} "
@@ -179,17 +225,28 @@ class Game:
                 if a_card.id in self.handlers['onThisDmgPlayer']:
                     for (verifier, handler) in self.handlers['onThisDmgPlayer'][a_card.id]:
                         if verifier(self, 'onThisDmgPlayer'):
-                            handler(self)
+                            if not search:
+                                handler(self)
+                            else:
+                                getThrough[-1].append(handler)
                 if defender.life <= 0:
                     self.end()
+        if search:
+            return toFight + getThrough
+        return None
 
-    def fight(self, a, b):
-        if a.atk >= b.df:
-            self.kill(b, a)
-        if b.atk >= a.df:
-            self.kill(a, b)
+    def fight(self, a, b, search=False):
+        if not search:
+            if a.atk >= b.df:
+                self.kill(b, a)
+            if b.atk >= a.df:
+                self.kill(a, b)
+        else:
+            #btl result
+            return (b.atk >= a.df, a.atk >= b.df)
 
-    def play(self, card, noAnyEntrance=False):
+    def play(self, card, noAnyEntrance=False, search=False):
+        triggersToFire = []
         self.lastEntered = card
         if card.pID == 0 and card in self.p1.hand:
             self.p1.hand.remove(card)
@@ -211,21 +268,31 @@ class Game:
                     if self.logging:
                         self.turnLog.append(_ev('trigger',
                             f"  entranceThis triggers for {card.name}"))
-                    handler(self)
+                    if not search:
+                        handler(self)
+                    else:
+                        triggersToFire.append(handler)
         if not noAnyEntrance:
             for entranceAnyTriggers in self.handlers['entranceAny']:
                 if entranceAnyTriggers[0](self, 'entranceAny'):
                     if self.logging:
                         self.turnLog.append(_ev('trigger',
                             f"  entranceAny trigger fires"))
-                    entranceAnyTriggers[1](self)
-        if card.df == 0:
+                    if not search:
+                        entranceAnyTriggers[1](self)
+                    else:
+                        triggersToFire.append(entranceAnyTriggers[1])
+        if card.df == 0 and not search:
             self.removeFromBattlefield(card)
+        if search:
+            return triggersToFire
+        return None
 
     def isActive(self, card):
         return card in self.p1.battlefield or card in self.p2.battlefield
 
-    def kill(self, card, culprit=None):
+    def kill(self, card, culprit=None, search=False):
+        triggersToFire = []
         if self.logging:
             if culprit is not None:
                 self.turnLog.append(_ev('kill',
@@ -252,24 +319,35 @@ class Game:
                     if self.logging:
                         self.turnLog.append(_ev('trigger',
                             f"  exitThis triggers for {card.name}"))
-                    handler(self)
+                    if not search:
+                        handler(self)
+                    else:
+                        triggersToFire.append(handler)
         if culprit is not None and culprit.id in self.handlers['onKill']:
             for (verifier, handler) in self.handlers['onKill'][culprit.id]:
                 if verifier(self, 'onKill'):
                     if self.logging:
                         self.turnLog.append(_ev('trigger',
                            f"  onKill triggers for {culprit.name}"))
-                    handler(self)
+                    if not search:
+                        handler(self)
+                    else:
+                        triggersToFire.append(handler)
         for exitAnyTriggers in self.handlers['exitAny']:
             if exitAnyTriggers[0](self, 'exitAny'):
                 if self.logging:
                     self.turnLog.append(_ev('trigger', "  exitAny trigger fires"))
-                exitAnyTriggers[1](self)
-
+                if not search:
+                    exitAnyTriggers[1](self)
+                else:
+                    triggersToFire.append(exitAnyTriggers[1])
         if card.pID == 0 and card not in self.p1.battlefield:
             card.exit(self)
         elif card.pID == 1 and card not in self.p2.battlefield:
             card.exit(self)
+        if search:
+            return triggersToFire
+        return None
 
     def addHandler(self, type, verifier, effect, cID=0):
         if cID == 0:

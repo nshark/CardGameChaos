@@ -4,7 +4,6 @@ import json
 import traceback
 from Harness.Game import Deck, Game, Player
 from stateHelper import GameState
-from botTraining import game_stateEncoder
 # ── Load card library ──────────────────────────────────────────────────────────
 cardPath = './Harness/cards.json'
 with open(cardPath, 'r') as f:
@@ -213,6 +212,13 @@ def check_invariants(game, context=""):
 
     return errors
 
+def create_random_game():
+    ids_a = random.choices(regularCards, k=20) + random.choices(curseCards, k=random.randint(0, 2))
+    ids_b = random.choices(regularCards, k=20) + random.choices(curseCards, k=random.randint(0, 2))
+    deck_a = Deck(cardLibrary, ids_a, 0)
+    deck_b = Deck(cardLibrary, ids_b, 1)
+    return Game(deck_a, deck_b)
+
 # ── Single game runner ─────────────────────────────────────────────────────────
 def run_game(game_number, max_turns=200, returnStates=False):
     bot_request_decision.states = []
@@ -318,10 +324,6 @@ def run_suite(n_games=50):
 if __name__ == '__main__':
     game_states = run_game(0, returnStates=True)
     game_encodings = []
-    for gs in game_states:
-        game_encodings.append(game_stateEncoder(gs))
-    print(len(game_encodings))
-    print(game_encodings[-1])
-    print(game_states[-1])
+
 
 
